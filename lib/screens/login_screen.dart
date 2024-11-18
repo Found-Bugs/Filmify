@@ -1,4 +1,4 @@
-import 'package:filmify/screens/home_screen.dart';
+import 'package:filmify/screens/bottom_nav_bar.dart';
 import 'package:filmify/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -166,7 +166,7 @@ class LoginScreen extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const HomeScreen()),
+                                                const BottomNavBar()),
                                       );
                                     },
                                     style: ButtonStyle(

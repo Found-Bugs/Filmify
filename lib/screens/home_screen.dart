@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart'; // Import the library
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,197 +10,117 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Create a PageController to control the carousel
   final PageController _pageController = PageController();
-
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(
-              right: 16.0, left: 16.0, top: 50.0, bottom: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top Row: Search Bar with Icons
-              Row(
-                children: [
-                  // Search Bar
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Cari Judul Film',
-                        hintStyle: const TextStyle(color: Colors.grey),
-                        prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(
+            right: 16.0, left: 16.0, top: 50.0, bottom: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Cari Judul Film',
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-
-                  // Notification Icon
-                  IconButton(
-                    icon: const Icon(Icons.notifications, color: Colors.black),
-                    onPressed: () {},
-                  ),
-
-                  // Wishlist Icon (Replaced Profile Icon)
-                  IconButton(
-                    icon: const Icon(Icons.bookmark, color: Colors.black),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              // Carousel Banner
-              SizedBox(
-                height: 180,
-                child: PageView(
-                  controller: _pageController, // Assign the controller
-                  children: [
-                    buildBannerImage('assets/hero.png'),
-                    buildBannerImage('assets/hero.png'),
-                    buildBannerImage('assets/hero.png'),
-                  ],
                 ),
-              ),
-
-              // Page Indicator Below Carousel (Aligned to the Left)
-              Align(
-                alignment: Alignment.centerLeft, // Align to the left
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 8.0), // Add some padding on the left
-                  child: SmoothPageIndicator(
-                    controller: _pageController, // Controller for the indicator
-                    count: 3, // Total number of pages in the carousel
-                    effect: const WormEffect(
-                      // Effect style for the indicator
-                      dotHeight: 8,
-                      dotWidth: 8,
-                      activeDotColor: Colors.indigo,
-                      dotColor: Colors.grey,
-                    ),
-                  ),
+                const SizedBox(width: 10),
+                IconButton(
+                  icon: const Icon(Icons.notifications, color: Colors.black),
+                  onPressed: () {},
                 ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Category Icons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                IconButton(
+                  icon: const Icon(Icons.bookmark, color: Colors.black),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 180,
+              child: PageView(
+                controller: _pageController,
                 children: [
-                  buildCategoryIcon(Icons.movie, 'Genres'),
-                  buildCategoryIcon(Icons.tv, 'Platforms'),
-                  buildCategoryIcon(Icons.theaters, 'Cinemas'),
-                  buildCategoryIcon(Icons.new_releases, 'New Release'),
+                  buildBannerImage('assets/hero.png'),
+                  buildBannerImage('assets/hero.png'),
+                  buildBannerImage('assets/hero.png'),
                 ],
-              ),
-
-              const SizedBox(height: 20),
-
-              // Recommended Movies Section
-              buildSectionHeader('Recommended Movies', () {
-                // Navigate to see more recommended movies
-              }),
-              SizedBox(
-                height: 250,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    buildMovieCard('assets/cover1.png', 'Deadpool & Wolverine',
-                        'Action, Comedy, Superhero', '7.8'),
-                    buildMovieCard('assets/cover2.png', '3 Idiots',
-                        'Comedy, Drama', '8.4'),
-                    buildMovieCard('assets/cover3.png', 'Nobody',
-                        'Action, Crime, Drama', '7.4'),
-                    buildMovieCard('assets/cover1.png', 'The Witcher',
-                        'Animation, Fantasy, Action', '8.3'),
-                  ],
-                ),
-              ),
-
-              // SizedBox(height: 10),
-
-              // Suggestions From Scanning Section
-              buildSectionHeader('Suggestion From Scanning', () {
-                // Navigate to see more suggestions
-              }),
-              SizedBox(
-                height: 250,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    buildMovieCard('assets/cover1.png', 'Deadpool & Wolverine',
-                        'Action, Comedy, Superhero', '7.8'),
-                    buildMovieCard('assets/cover2.png', '3 Idiots',
-                        'Comedy, Drama', '8.4'),
-                    buildMovieCard('assets/cover3.png', 'Nobody',
-                        'Action, Crime, Drama', '7.4'),
-                    buildMovieCard('assets/cover1.png', 'The Witcher',
-                        'Animation, Fantasy, Action', '8.3'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: '',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.movie_outlined),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade900,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.qr_code_scanner,
-                color: Colors.white,
               ),
             ),
-            label: '',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            label: '',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: '',
-          ),
-        ],
-        selectedItemColor: Colors.blue.shade900,
-        unselectedItemColor: Colors.black,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: SmoothPageIndicator(
+                  controller: _pageController,
+                  count: 3,
+                  effect: const WormEffect(
+                    dotHeight: 8,
+                    dotWidth: 8,
+                    activeDotColor: Colors.indigo,
+                    dotColor: Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                buildCategoryIcon(Icons.movie, 'Genres'),
+                buildCategoryIcon(Icons.tv, 'Platforms'),
+                buildCategoryIcon(Icons.theaters, 'Cinemas'),
+                buildCategoryIcon(Icons.new_releases, 'New Release'),
+              ],
+            ),
+            const SizedBox(height: 20),
+            buildSectionHeader('Recommended Movies', () {}),
+            SizedBox(
+              height: 250,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  buildMovieCard('assets/cover1.png', 'Deadpool & Wolverine',
+                      'Action, Comedy, Superhero', '7.8'),
+                  buildMovieCard('assets/cover2.png', '3 Idiots',
+                      'Comedy, Drama', '8.4'),
+                  buildMovieCard('assets/cover3.png', 'Nobody',
+                      'Action, Crime, Drama', '7.4'),
+                  buildMovieCard('assets/cover1.png', 'The Witcher',
+                      'Animation, Fantasy, Action', '8.3'),
+                ],
+              ),
+            ),
+            buildSectionHeader('Suggestion From Scanning', () {}),
+            SizedBox(
+              height: 250,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  buildMovieCard('assets/cover1.png', 'Deadpool & Wolverine',
+                      'Action, Comedy, Superhero', '7.8'),
+                  buildMovieCard('assets/cover2.png', '3 Idiots',
+                      'Comedy, Drama', '8.4'),
+                  buildMovieCard('assets/cover3.png', 'Nobody',
+                      'Action, Crime, Drama', '7.4'),
+                  buildMovieCard('assets/cover1.png', 'The Witcher',
+                      'Animation, Fantasy, Action', '8.3'),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
