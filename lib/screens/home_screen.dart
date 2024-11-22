@@ -1,3 +1,4 @@
+import 'package:filmify/screens/film_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -52,9 +53,21 @@ class _HomeScreenState extends State<HomeScreen> {
               child: PageView(
                 controller: _pageController,
                 children: [
-                  buildBannerImage('assets/hero.png'),
-                  buildBannerImage('assets/hero.png'),
-                  buildBannerImage('assets/hero.png'),
+                  buildBannerImage(
+                    'assets/hero.png',
+                    'Watch Populer Movies',
+                    'Tonton film-film terbaik pilihan di FilmiFace dan temukan petualangan baru di setiap genre favoritmu!',
+                  ),
+                  buildBannerImage(
+                    'assets/hero.png',
+                    'Explore Genres',
+                    'Temukan genre yang sesuai dengan suasana hatimu dan nikmati rekomendasi film terbaik!',
+                  ),
+                  buildBannerImage(
+                    'assets/hero.png',
+                    'New Releases',
+                    'Jangan lewatkan rilis terbaru dari berbagai film favoritmu di FilmiFace!',
+                  ),
                 ],
               ),
             ),
@@ -91,14 +104,34 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  buildMovieCard('assets/cover1.png', 'Deadpool & Wolverine',
-                      'Action, Comedy, Superhero', '7.8'),
-                  buildMovieCard('assets/cover2.png', '3 Idiots',
-                      'Comedy, Drama', '8.4'),
-                  buildMovieCard('assets/cover3.png', 'Nobody',
-                      'Action, Crime, Drama', '7.4'),
-                  buildMovieCard('assets/cover1.png', 'The Witcher',
-                      'Animation, Fantasy, Action', '8.3'),
+                  buildMovieCard(
+                    'assets/cover1.png',
+                    'Deadpool & Wolverine',
+                    'Action, Comedy, Superhero',
+                    '7.8',
+                    context,
+                  ),
+                  buildMovieCard(
+                    'assets/cover2.png',
+                    '3 Idiots',
+                    'Comedy, Drama',
+                    '8.4',
+                    context,
+                  ),
+                  buildMovieCard(
+                    'assets/cover3.png',
+                    'Nobody',
+                    'Action, Crime, Drama',
+                    '7.4',
+                    context,
+                  ),
+                  buildMovieCard(
+                    'assets/cover1.png',
+                    'The Witcher',
+                    'Animation, Fantasy, Action',
+                    '8.3',
+                    context,
+                  ),
                 ],
               ),
             ),
@@ -108,14 +141,34 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  buildMovieCard('assets/cover1.png', 'Deadpool & Wolverine',
-                      'Action, Comedy, Superhero', '7.8'),
-                  buildMovieCard('assets/cover2.png', '3 Idiots',
-                      'Comedy, Drama', '8.4'),
-                  buildMovieCard('assets/cover3.png', 'Nobody',
-                      'Action, Crime, Drama', '7.4'),
-                  buildMovieCard('assets/cover1.png', 'The Witcher',
-                      'Animation, Fantasy, Action', '8.3'),
+                  buildMovieCard(
+                    'assets/cover1.png',
+                    'Deadpool & Wolverine',
+                    'Action, Comedy, Superhero',
+                    '7.8',
+                    context,
+                  ),
+                  buildMovieCard(
+                    'assets/cover2.png',
+                    '3 Idiots',
+                    'Comedy, Drama',
+                    '8.4',
+                    context,
+                  ),
+                  buildMovieCard(
+                    'assets/cover3.png',
+                    'Nobody',
+                    'Action, Crime, Drama',
+                    '7.4',
+                    context,
+                  ),
+                  buildMovieCard(
+                    'assets/cover1.png',
+                    'The Witcher',
+                    'Animation, Fantasy, Action',
+                    '8.3',
+                    context,
+                  ),
                 ],
               ),
             ),
@@ -125,15 +178,51 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildBannerImage(String imagePath) {
+  Widget buildBannerImage(String imagePath, String title, String subtitle) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10, right: 5, left: 5),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
-        child: Image.asset(
-          imagePath,
-          fit: BoxFit.cover,
-          width: double.infinity,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              imagePath,
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
+            Container(
+              color: Colors.black
+                  .withOpacity(0.4), // Overlay gelap untuk teks agar terbaca
+            ),
+            Positioned(
+              top: 20,
+              left: 20,
+              right: 20,
+              bottom: 20,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -173,42 +262,58 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildMovieCard(
-      String imagePath, String title, String genre, String rating) {
-    return Container(
-      width: 110,
-      margin: const EdgeInsets.only(right: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-              width: 110,
+    String imagePath,
+    String title,
+    String genre,
+    String rating,
+    BuildContext context, // Tambahkan BuildContext agar bisa navigasi
+  ) {
+    return GestureDetector(
+      onTap: () {
+        // Navigasi ke MovieDetailPage
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FilmDetailScreen(),
+          ),
+        );
+      },
+      child: Container(
+        width: 110,
+        margin: const EdgeInsets.only(right: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+                width: 110,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
-          Text(
-            genre,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
-          ),
-          Row(
-            children: [
-              const Icon(Icons.star, color: Colors.amber, size: 16),
-              const SizedBox(width: 4),
-              Text(rating, style: const TextStyle(fontSize: 12)),
-            ],
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              genre,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+            Row(
+              children: [
+                const Icon(Icons.star, color: Colors.amber, size: 16),
+                const SizedBox(width: 4),
+                Text(rating, style: const TextStyle(fontSize: 12)),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
