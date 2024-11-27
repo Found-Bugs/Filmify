@@ -1,3 +1,4 @@
+import 'package:filmify/screens/camera_screen.dart';
 import 'package:filmify/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -16,15 +17,23 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> _pages = [
     const HomeScreen(),
     const PlaceholderPage(title: 'Movies'),
-    const PlaceholderPage(title: 'QR Scanner'),
+    const CameraScreen(), // Halaman kamera
     const PlaceholderPage(title: 'Receipts'),
     const PlaceholderPage(title: 'Profile'),
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 2) {
+      // Index untuk CameraPage
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const CameraScreen()),
+      );
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
