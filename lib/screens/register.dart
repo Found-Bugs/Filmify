@@ -5,7 +5,10 @@ import 'package:filmify/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 
 class Register extends StatelessWidget {
-  const Register({super.key});
+  Register({super.key});
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,32 +32,22 @@ class Register extends StatelessWidget {
                 fieldName: 'Full Name',
                 fieldNameColor: customTeksColorDark,
                 hintText: 'example. Septa Puma',
-                borderSide: BorderSide(),
               ),
-              const SizedBox(height: 16),
-              const CustomTextField(
+              CustomTextField(
+                controller: _emailController,
                 fieldName: 'Email',
                 fieldNameColor: customTeksColorDark,
                 hintText: 'example@example.com',
-                borderSide: BorderSide(),
+                borderSide: const BorderSide(),
               ),
-              const SizedBox(height: 16),
-              const CustomTextField(
-                fieldName: 'Date of Birth',
-                fieldNameColor: customTeksColorDark,
-                hintText: 'DD / MM / YYYY',
-                isPassword: true,
-                suffixIcon: Icons.calendar_today,
-                borderSide: BorderSide(),
-              ),
-              const SizedBox(height: 16),
-              const CustomTextField(
+              CustomTextField(
+                controller: _passwordController,
                 fieldName: 'Password',
                 fieldNameColor: customTeksColorDark,
                 hintText: 'Password',
                 isPassword: true,
                 suffixIcon: Icons.visibility_off,
-                borderSide: BorderSide(),
+                borderSide: const BorderSide(),
               ),
               const SizedBox(height: 16),
               const CustomTextField(
