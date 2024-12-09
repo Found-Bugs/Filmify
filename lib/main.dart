@@ -1,4 +1,4 @@
-import 'package:filmify/screens/splash_screen.dart';
+import 'package:filmify/screens/splash.dart';
 import 'package:flutter/material.dart';
 
 void main() {

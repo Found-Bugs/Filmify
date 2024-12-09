@@ -1,14 +1,15 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key});
+class Camera extends StatefulWidget {
+  const Camera({super.key});
 
   @override
-  _CameraScreenState createState() => _CameraScreenState();
+  // ignore: library_private_types_in_public_api
+  _CameraState createState() => _CameraState();
 }
 
-class _CameraScreenState extends State<CameraScreen> {
+class _CameraState extends State<Camera> {
   late CameraController _cameraController;
   late List<CameraDescription> _cameras;
   bool _isCameraInitialized = false;

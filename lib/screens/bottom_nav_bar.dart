@@ -1,5 +1,7 @@
-import 'package:filmify/screens/camera_screen.dart';
-import 'package:filmify/screens/home_screen.dart';
+import 'package:filmify/screens/camera.dart';
+import 'package:filmify/screens/favorite.dart';
+import 'package:filmify/screens/home.dart';
+import 'package:filmify/screens/scan_history_empty.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -15,21 +17,22 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   // List of pages for navigation
   final List<Widget> _pages = [
-    const HomeScreen(),
-    const PlaceholderPage(title: 'Movies'),
-    const CameraScreen(), // Halaman kamera
-    const PlaceholderPage(title: 'Receipts'),
+    const Home(),
+    Favorite(),
+    const PlaceholderPage(title: 'Camera'),
+    const ScanHistoryEmpty(), // Scan History Page
     const PlaceholderPage(title: 'Profile'),
   ];
 
   void _onItemTapped(int index) {
     if (index == 2) {
-      // Index untuk CameraPage
+      // Logika khusus untuk tombol Camera
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const CameraScreen()),
+        MaterialPageRoute(builder: (context) => const Camera()),
       );
     } else {
+      // Logika umum untuk tombol lainnya
       setState(() {
         _selectedIndex = index;
       });

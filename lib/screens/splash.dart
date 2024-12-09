@@ -1,4 +1,6 @@
-import 'package:filmify/screens/splash2_screen.dart';
+import 'package:filmify/screens/first_get_started.dart';
+import 'package:filmify/utils/image.dart';
+import 'package:filmify/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -8,16 +10,16 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const Splash2Screen()));
+          MaterialPageRoute(builder: (context) => const FirstGetStarted()));
     });
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: customBackgroundColorLight,
       body: Center(
         child: LayoutBuilder(
           builder: (context, constraints) {
             double imageSize = constraints.maxWidth * 1;
             return Image.asset(
-              'assets/Splash.png', // Adjust path as per your assets
+              logo,
               width: imageSize,
               height: imageSize,
               fit: BoxFit.contain,
