@@ -1,6 +1,7 @@
 import 'package:filmify/screens/camera.dart';
 import 'package:filmify/screens/favorite.dart';
 import 'package:filmify/screens/home.dart';
+import 'package:filmify/screens/profile.dart';
 import 'package:filmify/screens/scan_history_empty.dart';
 import 'package:flutter/material.dart';
 
@@ -20,8 +21,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     const Home(),
     Favorite(),
     const PlaceholderPage(title: 'Camera'),
-    const ScanHistoryEmpty(), // Scan History Page
-    const PlaceholderPage(title: 'Profile'),
+    const ScanHistory(), // Scan History Page
+    const Profile(),
   ];
 
   void _onItemTapped(int index) {
