@@ -1,62 +1,38 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:filmify/services/cloudinary_service.dart'; // Pastikan path ini benar
 
-class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class CloudinaryService {
+  final String cloudName = 'dtm0dq4oz';
+  final String apiKey = '469335533621271';
+  final String apiSecret = 'UlgoGrLiS70x6Mw3mqH8cHiG8Wg';
 
-  // Register a user with email and password
-  Future<User?> registerWithEmailAndPassword(
-      String email, String password) async {
-    try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      } else {
-        print('Registration error: ${e.message}');
-      }
-    } catch (e) {
-      print('Error: $e');
+  Future<String?> uploadImage(File imageFile) async {
+    final url =
+        Uri.parse('https://api.cloudinary.com/v1_1/$cloudName/image/upload');
+    final mimeType = imageFile.path.split('.').last;
+
+    final request = http.MultipartRequest('POST', url)
+      ..fields['upload_preset'] = 'ml_default'
+      ..fields['api_key'] = apiKey
+      ..fields['timestamp'] = DateTime.now().millisecondsSinceEpoch.toString()
+      ..files.add(await http.MultipartFile.fromPath('file', imageFile.path,
+          contentType: MediaType('image', mimeType)));
+
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      final responseData = await response.stream.bytesToString();
+      final jsonResponse = json.decode(responseData);
+      return jsonResponse['secure_url'];
+    } else {
+      print('Failed to upload image: ${response.statusCode}');
+      return null;
     }
-    return null;
-  }
-
-  // Login a user with email and password
-  Future<User?> loginWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided.');
-      } else {
-        print('Login error: ${e.message}');
-      }
-    } catch (e) {
-      print('Error: $e');
-    }
-    return null;
-  }
-
-  // Logout the current user
-  Future<void> logout() async {
-    await _auth.signOut();
   }
 }
 
@@ -147,18 +123,12 @@ class _CameraState extends State<Camera> {
       final imageUrl = await cloudinaryService.uploadImage(imageFile);
 
       if (imageUrl != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gambar berhasil diunggah: $imageUrl')),
-        );
+        print('Gambar berhasil diunggah: $imageUrl');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gagal mengunggah gambar')),
-        );
+        print('Gagal mengunggah gambar');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error mengambil gambar: $e')),
-      );
+      print('Error mengambil gambar: $e');
     }
   }
 
