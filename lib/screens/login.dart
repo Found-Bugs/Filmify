@@ -5,7 +5,6 @@ import 'package:filmify/utils/image.dart';
 import 'package:filmify/widgets/custom_button.dart';
 import 'package:filmify/widgets/custom_card.dart';
 import 'package:filmify/widgets/custom_scaffold.dart';
-import 'package:filmify/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:filmify/services/auth_service.dart'; // Import AuthService
 
@@ -101,25 +100,62 @@ class _LoginState extends State<Login> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: customTeksColorDark,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'example@example.com',
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Email",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: customTeksColorDark, // Gunakan parameter warna
+                ),
               ),
             ),
+            const SizedBox(height: 5),
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                hintText: "example@example.com",
+                hintStyle: const TextStyle(color: Colors.black45),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Password",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: customTeksColorDark, // Gunakan parameter warna
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
             TextField(
               controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                hintText: 'Enter your password',
-              ),
               obscureText: true,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                hintText: "Enter your password",
+                hintStyle: const TextStyle(color: Colors.black45),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              ),
             ),
             const SizedBox(height: 10),
             Align(
