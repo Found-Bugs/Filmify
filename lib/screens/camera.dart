@@ -117,7 +117,7 @@ class _CameraState extends State<Camera> {
         _showUploadSuccessDialog(imageUrl);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text(
               'Gagal mengunggah gambar',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -140,8 +140,9 @@ class _CameraState extends State<Camera> {
             borderRadius: BorderRadius.circular(20.0), // Set the border radius
             child: Container(
               color: Colors.green, // Set the background color to green
-              padding: EdgeInsets.all(16.0), // Add padding inside the container
-              child: Column(
+              padding: const EdgeInsets.all(
+                  16.0), // Add padding inside the container
+              child: const Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
@@ -172,7 +173,7 @@ class _CameraState extends State<Camera> {
     );
 
     // Automatically close the dialog and navigate back to home after a delay
-    Future.delayed(Duration(milliseconds: 1700), () {
+    Future.delayed(const Duration(milliseconds: 1700), () {
       Navigator.of(context).pop(); // Close the dialog
       Navigator.of(context).pop(); // Navigate back to home
     });

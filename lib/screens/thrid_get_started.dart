@@ -87,7 +87,7 @@ class ThridGetStarted extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Register()),
+                  MaterialPageRoute(builder: (context) => const Register()),
                 );
               },
               text: 'Create Account',
