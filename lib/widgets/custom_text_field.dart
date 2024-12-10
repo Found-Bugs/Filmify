@@ -7,6 +7,8 @@ class CustomTextField extends StatelessWidget {
   final bool isPassword; // Apakah field ini untuk password
   final IconData? suffixIcon; // Ikon opsional di dalam field
   final BorderSide? borderSide; // Border opsional
+  final TextEditingController? controller; // Controller opsional
+  final bool? obscureText; // Apakah field ini harus diacak
 
   const CustomTextField({
     super.key,
@@ -16,6 +18,8 @@ class CustomTextField extends StatelessWidget {
     this.isPassword = false,
     this.suffixIcon,
     this.borderSide,
+    this.controller,
+    this.obscureText = false,
   });
 
   @override

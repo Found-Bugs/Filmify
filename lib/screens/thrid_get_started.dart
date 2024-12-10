@@ -67,8 +67,7 @@ class ThridGetStarted extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const Login()),
+                  MaterialPageRoute(builder: (context) => const Login()),
                 );
               },
               text: 'Login',
@@ -88,8 +87,7 @@ class ThridGetStarted extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const Register()),
+                  MaterialPageRoute(builder: (context) => Register()),
                 );
               },
               text: 'Create Account',
