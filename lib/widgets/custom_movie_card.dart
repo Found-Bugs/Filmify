@@ -46,7 +46,7 @@ class CustomMovieCard extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
+                        child: Image.network(
                           movie['imagePath']!,
                           fit: BoxFit.cover,
                           width: 110,
