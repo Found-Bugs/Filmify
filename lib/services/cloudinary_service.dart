@@ -5,7 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:filmify/services/cloudinary_service.dart'; // Pastikan path ini benar
+// Pastikan path ini benar
 
 class CloudinaryService {
   final String cloudName = 'dtm0dq4oz';
