@@ -1,11 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:filmify/services/cloudinary_service.dart';
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _CameraState createState() => _CameraState();
 }
 
@@ -13,7 +18,9 @@ class _CameraState extends State<Camera> {
   late CameraController _cameraController;
   late List<CameraDescription> _cameras;
   bool _isCameraInitialized = false;
-  int _selectedCameraIndex = 0; // Index kamera aktif
+  int _selectedCameraIndex = 0;
+  String? _imagePath;
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -23,12 +30,9 @@ class _CameraState extends State<Camera> {
 
   Future<void> _initializeCamera() async {
     try {
-      // Ambil daftar kamera yang tersedia
       _cameras = await availableCameras();
-
       if (_cameras.isEmpty) throw Exception("Kamera tidak ditemukan");
 
-      // Inisialisasi kamera pertama
       _cameraController = CameraController(
         _cameras[_selectedCameraIndex],
         ResolutionPreset.high,
@@ -40,7 +44,6 @@ class _CameraState extends State<Camera> {
         _isCameraInitialized = true;
       });
     } catch (e) {
-      // Tampilkan error jika gagal
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Gagal menginisialisasi kamera: $e")),
       );
@@ -79,6 +82,102 @@ class _CameraState extends State<Camera> {
     }
   }
 
+  Future<void> _takePicture() async {
+    try {
+      final image = await _cameraController.takePicture();
+      final directory = await getApplicationDocumentsDirectory();
+      final imagePath =
+          '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final imageFile = File(imagePath);
+      await image.saveTo(imageFile.path);
+
+      setState(() {
+        _imagePath = imagePath;
+      });
+    } catch (e) {
+      print('Error mengambil gambar: $e');
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_imagePath != null) {
+      setState(() {
+        _isUploading = true;
+      });
+
+      final imageFile = File(_imagePath!);
+      final cloudinaryService = CloudinaryService();
+      final imageUrl = await cloudinaryService.uploadImage(imageFile);
+
+      setState(() {
+        _isUploading = false;
+      });
+
+      if (imageUrl != null) {
+        _showUploadSuccessDialog(imageUrl);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal mengunggah gambar',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showUploadSuccessDialog(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor:
+              Colors.transparent, // Make the AlertDialog background transparent
+          contentPadding: EdgeInsets.zero, // Remove default padding
+          content: ClipRRect(
+            borderRadius: BorderRadius.circular(20.0), // Set the border radius
+            child: Container(
+              color: Colors.green, // Set the background color to green
+              padding: EdgeInsets.all(16.0), // Add padding inside the container
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'UPLOAD BERHASIL',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors
+                          .white, // Set text color to white for better contrast
+                    ),
+                  ),
+                  SizedBox(
+                      height:
+                          8.0), // Add some space between the title and content
+                  Text(
+                    'GAMBAR BERHASIL DIUNGGAH',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors
+                          .white, // Set text color to white for better contrast
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    // Automatically close the dialog and navigate back to home after a delay
+    Future.delayed(Duration(milliseconds: 1700), () {
+      Navigator.of(context).pop(); // Close the dialog
+      Navigator.of(context).pop(); // Navigate back to home
+    });
+  }
+
   @override
   void dispose() {
     _cameraController.dispose();
@@ -98,10 +197,10 @@ class _CameraState extends State<Camera> {
     return Scaffold(
       body: Stack(
         children: [
-          // Tampilan kamera
-          CameraPreview(_cameraController),
-
-          // Garis bantu dengan sudut melengkung
+          if (_imagePath == null)
+            CameraPreview(_cameraController)
+          else
+            Image.file(File(_imagePath!)),
           Align(
             alignment: Alignment.center,
             child: SizedBox(
@@ -109,7 +208,6 @@ class _CameraState extends State<Camera> {
               height: 300,
               child: Stack(
                 children: [
-                  // Garis bantu atas kiri
                   Align(
                     alignment: Alignment.topLeft,
                     child: Container(
@@ -126,8 +224,6 @@ class _CameraState extends State<Camera> {
                       ),
                     ),
                   ),
-
-                  // Garis bantu atas kanan
                   Align(
                     alignment: Alignment.topRight,
                     child: Container(
@@ -144,8 +240,6 @@ class _CameraState extends State<Camera> {
                       ),
                     ),
                   ),
-
-                  // Garis bantu bawah kiri
                   Align(
                     alignment: Alignment.bottomLeft,
                     child: Container(
@@ -162,8 +256,6 @@ class _CameraState extends State<Camera> {
                       ),
                     ),
                   ),
-
-                  // Garis bantu bawah kanan
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Container(
@@ -184,8 +276,6 @@ class _CameraState extends State<Camera> {
               ),
             ),
           ),
-
-          // Tombol bawah
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -193,31 +283,48 @@ class _CameraState extends State<Camera> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Tombol kembali
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.black),
                     onPressed: () => Navigator.pop(context),
                   ),
-
-                  // Tombol ambil foto
-                  GestureDetector(
-                    onTap: () async {
-                      final image = await _cameraController.takePicture();
-                      print('Foto diambil: ${image.path}');
-                    },
-                    child: Container(
-                      width: 70,
-                      height: 70,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.black, width: 2),
+                  if (_imagePath == null)
+                    GestureDetector(
+                      onTap: _takePicture,
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.black, width: 2),
+                        ),
+                        child: const Icon(Icons.camera_alt,
+                            size: 36, color: Colors.black),
                       ),
-                      child: const Icon(Icons.camera_alt, size: 36, color: Colors.black),
+                    )
+                  else
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _imagePath = null;
+                            });
+                          },
+                          child: const Text('Retake'),
+                        ),
+                        const SizedBox(width: 16),
+                        ElevatedButton(
+                          onPressed: _uploadImage,
+                          child: _isUploading
+                              ? const CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                )
+                              : const Text('Upload'),
+                        ),
+                      ],
                     ),
-                  ),
-
-                  // Tombol ganti kamera
                   IconButton(
                     icon: const Icon(Icons.cameraswitch, color: Colors.black),
                     onPressed: _switchCamera,
