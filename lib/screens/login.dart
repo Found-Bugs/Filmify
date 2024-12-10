@@ -46,7 +46,7 @@ class _LoginState extends State<Login> {
         // Navigate to home screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => BottomNavBar()),
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
         );
       } else {
         setState(() {

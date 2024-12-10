@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:filmify/screens/login.dart';
 
 class Register extends StatefulWidget {
+  const Register({super.key});
+
   @override
   _RegisterState createState() => _RegisterState();
 }
@@ -64,7 +66,7 @@ class _RegisterState extends State<Register> {
                 Navigator.of(context).pop(); // Tutup dialog
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => Login()),
+                  MaterialPageRoute(builder: (context) => const Login()),
                 );
               },
               child: const Text('OK'),
