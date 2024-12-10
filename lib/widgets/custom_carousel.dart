@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../data/data_banner.dart';
@@ -13,11 +14,59 @@ class CustomCarousel extends StatefulWidget {
 class _CustomCarouselState extends State<CustomCarousel> {
   final PageController _pageController = PageController();
   late Future<List<Map<String, String>>> bannersFuture;
+  List<Map<String, String>>? banners;
+  int currentPage = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     bannersFuture = DataBanner.fetchBanners();
+    bannersFuture.then((data) {
+      setState(() {
+        banners = data;
+      });
+      _startAutoScroll();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoScroll() {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_pageController.hasClients && banners != null) {
+        int nextPage = _pageController.page!.toInt() + 1;
+        if (nextPage >= banners!.length + 1) {
+          nextPage = 0;
+        }
+        _pageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeIn,
+        );
+      }
+    });
+  }
+
+  void _onPageChanged(int index, int bannerCount) {
+    setState(() {
+      currentPage = index;
+    });
+
+    if (index == bannerCount) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        _pageController.jumpToPage(0);
+      });
+    } else if (index == -1) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        _pageController.jumpToPage(bannerCount - 1);
+      });
+    }
   }
 
   @override
@@ -37,15 +86,25 @@ class _CustomCarouselState extends State<CustomCarousel> {
             children: [
               SizedBox(
                 height: 180,
-                child: PageView(
+                child: PageView.builder(
                   controller: _pageController,
-                  children: banners.map((banner) {
+                  onPageChanged: (index) =>
+                      _onPageChanged(index, banners.length),
+                  itemCount: banners.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == banners.length) {
+                      return CustomBanner(
+                        imagePath: banners[0]['imagePath']!,
+                        title: banners[0]['title']!,
+                        subtitle: banners[0]['subtitle']!,
+                      );
+                    }
                     return CustomBanner(
-                      imagePath: banner['imagePath']!,
-                      title: banner['title']!,
-                      subtitle: banner['subtitle']!,
+                      imagePath: banners[index]['imagePath']!,
+                      title: banners[index]['title']!,
+                      subtitle: banners[index]['subtitle']!,
                     );
-                  }).toList(),
+                  },
                 ),
               ),
               Align(
