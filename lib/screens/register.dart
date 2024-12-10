@@ -1,14 +1,65 @@
-import 'package:filmify/screens/login.dart';
-import 'package:filmify/utils/colors.dart';
-import 'package:filmify/widgets/custom_button.dart';
-import 'package:filmify/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:filmify/screens/login.dart';
 
-class Register extends StatelessWidget {
-  Register({super.key});
+class Register extends StatefulWidget {
+  @override
+  _RegisterState createState() => _RegisterState();
+}
 
+class _RegisterState extends State<Register> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String _errorMessage = '';
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _register() async {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // Tampilkan dialog berhasil registrasi
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Registration Successful'),
+          content: const Text('Your account has been successfully created.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Login()),
+                );
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorMessage = e.message ?? 'An unknown error occurred';
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'An unknown error occurred';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,75 +79,42 @@ class Register extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const CustomTextField(
-                fieldName: 'Full Name',
-                fieldNameColor: customTeksColorDark,
-                hintText: 'example. Septa Puma',
-              ),
-              CustomTextField(
-                controller: _emailController,
-                fieldName: 'Email',
-                fieldNameColor: customTeksColorDark,
-                hintText: 'example@example.com',
-                borderSide: const BorderSide(),
-              ),
-              CustomTextField(
-                controller: _passwordController,
-                fieldName: 'Password',
-                fieldNameColor: customTeksColorDark,
-                hintText: 'Password',
-                isPassword: true,
-                suffixIcon: Icons.visibility_off,
-                borderSide: const BorderSide(),
-              ),
-              const SizedBox(height: 16),
-              const CustomTextField(
-                fieldName: 'Confirm Password',
-                fieldNameColor: customTeksColorDark,
-                hintText: 'Confirm Password',
-                isPassword: true,
-                suffixIcon: Icons.visibility_off,
-                borderSide: BorderSide(),
-              ),
-              const SizedBox(height: 24),
-              CustomButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Login()),
-                  );
-                },
-                text: 'Create Account',
-                backgroundColor: customButtonColorDark,
-                textColor: customTeksColorLight,
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Already have account?",
-                      style: TextStyle(color: Colors.black54),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Login()),
-                        );
-                      },
-                      child: const Text(
-                        'Log in',
-                        style: TextStyle(
-                            color: Color(0xFF5751F7),
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
+              TextField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                  hintText: 'Username',
                 ),
               ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'example@example.com',
+                ),
+              ),
+              TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  hintText: 'Enter your password',
+                ),
+                obscureText: true,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _register,
+                child: const Text('Register'),
+              ),
+              if (_errorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                    _errorMessage,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
             ],
           ),
         ),
