@@ -21,7 +21,7 @@ class CustomBanner extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
+            Image.network(
               imagePath,
               fit: BoxFit.cover,
               width: double.infinity,
