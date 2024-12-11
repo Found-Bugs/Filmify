@@ -16,6 +16,9 @@ class _GenresState extends State<Genres> {
   Map<int, String> genreMap = {};
   Map<int, List<Map<String, dynamic>>> genreMovies = {};
   bool isLoading = true;
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -67,40 +70,96 @@ class _GenresState extends State<Genres> {
     }
   }
 
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query.toLowerCase();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return CustomHeader(
-      title: "Genres",
-      hintText: "Cari Judul Film",
-      content: genreMap.entries.map((entry) {
-        final genreId = entry.key;
-        final genreName = entry.value;
-        final movies = genreMovies[genreId] ?? [];
+    final filteredGenreMovies = genreMovies.map((genreId, movies) {
+      final filteredMovies = movies.where((movie) {
+        final title = movie['title'].toLowerCase();
+        return title.contains(_searchQuery);
+      }).toList();
+      return MapEntry(genreId, filteredMovies);
+    });
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: CustomMovieCard(
-            title: genreName,
-            movies: movies.map((movie) {
-              final movieGenres = (movie['genre_ids'] as List)
-                  .map((id) => genreMap[id] ?? 'Unknown')
-                  .join(', ');
+    // Filter out genres with no matching movies
+    final filteredGenres = filteredGenreMovies.entries
+        .where((entry) => entry.value.isNotEmpty)
+        .toList();
 
-              return {
-                'imagePath':
-                    'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
-                'title': movie['title'],
-                'genre': movieGenres, // Semua genre movie
-                'rating': movie['vote_average'].toStringAsFixed(1),
-              };
-            }).toList(),
-          ),
-        );
-      }).toList(),
+    // Sort genres to bring those with matching movies to the top
+    filteredGenres.sort((a, b) {
+      final aHasMatch = a.value.isNotEmpty;
+      final bHasMatch = b.value.isNotEmpty;
+      if (aHasMatch && !bHasMatch) return -1;
+      if (!aHasMatch && bHasMatch) return 1;
+      return 0;
+    });
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Genres'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                hintText: 'Search movies title',
+                hintStyle: const TextStyle(color: Colors.grey),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              onChanged: _onSearchChanged,
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView(
+                children: filteredGenres.map((entry) {
+                  final genreId = entry.key;
+                  final genreName = genreMap[genreId]!;
+                  final movies = entry.value;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: CustomMovieCard(
+                      title: genreName,
+                      movies: movies.map((movie) {
+                        final movieGenres = (movie['genre_ids'] as List)
+                            .map((id) => genreMap[id] ?? 'Unknown')
+                            .join(', ');
+
+                        return {
+                          'imagePath':
+                              'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                          'title': movie['title'],
+                          'genre': movieGenres, // Semua genre movie
+                          'rating': movie['vote_average'].toStringAsFixed(1),
+                        };
+                      }).toList(),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
