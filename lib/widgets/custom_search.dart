@@ -30,7 +30,7 @@ class CustomSearch extends StatefulWidget {
   _CustomSearchState createState() => _CustomSearchState();
 }
 
-class _CustomSearchState extends State<CustomSearch> {
+class _CustomSearchState extends State<CustomSearch> with RouteAware {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   final TMDBApiService _apiService = TMDBApiService();
@@ -46,6 +46,10 @@ class _CustomSearchState extends State<CustomSearch> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      routeObserver.subscribe(this, route);
+    }
     _resetSearch();
   }
 
@@ -53,6 +57,7 @@ class _CustomSearchState extends State<CustomSearch> {
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();
+    routeObserver.unsubscribe(this);
     super.dispose();
   }
 
@@ -83,6 +88,11 @@ class _CustomSearchState extends State<CustomSearch> {
     } else {
       _resetSearch();
     }
+  }
+
+  @override
+  void didPopNext() {
+    _resetSearch();
   }
 
   @override
