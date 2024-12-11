@@ -7,6 +7,7 @@ import 'package:filmify/widgets/custom_card.dart';
 import 'package:filmify/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:filmify/services/auth_service.dart'; // Import AuthService
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuthException
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -28,11 +29,33 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please fill in both email and password.';
-      });
+    if (_emailController.text.isEmpty && _passwordController.text.isEmpty) {
+      _showErrorDialog('Please fill in both email and password.');
+      return;
+    } else if (_emailController.text.isEmpty) {
+      _showErrorDialog('Please fill in the email field.');
+      return;
+    } else if (_passwordController.text.isEmpty) {
+      _showErrorDialog('Please fill in the password field.');
       return;
     }
 
@@ -49,14 +72,16 @@ class _LoginState extends State<Login> {
           MaterialPageRoute(builder: (context) => const BottomNavBar()),
         );
       } else {
-        setState(() {
-          _errorMessage = 'Failed to log in. Please try again.';
-        });
+        _showErrorDialog('Incorrect email and password.');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        _showErrorDialog('Incorrect email or password.');
+      } else {
+        _showErrorDialog('An error occurred: ${e.message}');
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'An error occurred: $e';
-      });
+      _showErrorDialog('An error occurred: $e');
     }
   }
 
@@ -177,15 +202,6 @@ class _LoginState extends State<Login> {
               backgroundColor: customButtonColorDark,
               textColor: customTeksColorLight,
             ),
-            if (_errorMessage.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: Text(
-                  _errorMessage,
-                  style: const TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
-                ),
-              ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
