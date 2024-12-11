@@ -80,104 +80,119 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 45.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const CustomSearch(),
-              const SizedBox(height: 10),
-              const CustomCarousel(),
-              const SizedBox(height: 20),
-              CustomMenu(
-                categories: [
-                  {
-                    'icon': Icons.movie,
-                    'label': 'Genres',
-                    'onTap': () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Genres()),
-                      );
-                    },
-                  },
-                  {
-                    'icon': Icons.tv,
-                    'label': 'Platforms',
-                    'onTap': () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Platforms()),
-                      );
-                    },
-                  },
-                  {
-                    'icon': Icons.theaters,
-                    'label': 'Cinemas',
-                    'onTap': () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Cinemas()),
-                      );
-                    },
-                  },
-                  {
-                    'icon': Icons.new_releases,
-                    'label': 'New Release',
-                    'onTap': () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NewRelease()),
-                      );
-                    },
-                  },
+      body: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 45.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                      height: 60), // Space for the floating search bar
+                  const CustomCarousel(),
+                  const SizedBox(height: 20),
+                  CustomMenu(
+                    categories: [
+                      {
+                        'icon': Icons.movie,
+                        'label': 'Genres',
+                        'onTap': () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Genres()),
+                          );
+                        },
+                      },
+                      {
+                        'icon': Icons.tv,
+                        'label': 'Platforms',
+                        'onTap': () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Platforms()),
+                          );
+                        },
+                      },
+                      {
+                        'icon': Icons.theaters,
+                        'label': 'Cinemas',
+                        'onTap': () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Cinemas()),
+                          );
+                        },
+                      },
+                      {
+                        'icon': Icons.new_releases,
+                        'label': 'New Release',
+                        'onTap': () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const NewRelease()),
+                          );
+                        },
+                      },
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  CustomMovieCard(
+                    title: 'Recommended Movies (Top Rated)',
+                    movies: topRatedMovies.map((movie) {
+                      final genreNames = (movie['genre_ids'] as List)
+                          .map((id) => genreMap[id] ?? 'Unknown')
+                          .join(', ');
+                      return {
+                        'imagePath':
+                            'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                        'title': movie['title'],
+                        'genre': genreNames,
+                        'rating': movie['vote_average'].toStringAsFixed(1),
+                      };
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomMovieCard(
+                    title: 'Upcoming Movies',
+                    movies: upcomingMovies.map((movie) {
+                      final genreNames = (movie['genre_ids'] as List)
+                          .map((id) => genreMap[id] ?? 'Unknown')
+                          .join(', ');
+                      return {
+                        'imagePath':
+                            'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                        'title': movie['title'],
+                        'genre': genreNames,
+                        'rating': movie['vote_average'].toStringAsFixed(1),
+                      };
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomMovieCard(
+                    title: 'Suggestion From Scanning',
+                    movies: movieListB,
+                  ),
                 ],
               ),
-              const SizedBox(height: 20),
-              CustomMovieCard(
-                title: 'Recommended Movies (Top Rated)',
-                movies: topRatedMovies.map((movie) {
-                  final genreNames = (movie['genre_ids'] as List)
-                      .map((id) => genreMap[id] ?? 'Unknown')
-                      .join(', ');
-                  return {
-                    'imagePath':
-                        'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
-                    'title': movie['title'],
-                    'genre': genreNames,
-                    'rating': movie['vote_average'].toStringAsFixed(1),
-                  };
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-              CustomMovieCard(
-                title: 'Upcoming Movies',
-                movies: upcomingMovies.map((movie) {
-                  final genreNames = (movie['genre_ids'] as List)
-                      .map((id) => genreMap[id] ?? 'Unknown')
-                      .join(', ');
-                  return {
-                    'imagePath':
-                        'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
-                    'title': movie['title'],
-                    'genre': genreNames,
-                    'rating': movie['vote_average'].toStringAsFixed(1),
-                  };
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
-              CustomMovieCard(
-                title: 'Suggestion From Scanning',
-                movies: movieListB,
-              ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CustomSearch(),
+            ),
+          ),
+        ],
       ),
     );
   }
