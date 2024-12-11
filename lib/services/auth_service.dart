@@ -1,10 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:filmify/services/cloudinary_service.dart'; // Pastikan path ini benar
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
