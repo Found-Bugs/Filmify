@@ -1,5 +1,6 @@
 import 'package:filmify/tmdb_api/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:filmify/screens/detail_movie.dart'; // Import the DetailMovie screen
 
 class CustomSearch extends StatefulWidget {
   const CustomSearch({super.key});
@@ -85,11 +86,10 @@ class _CustomSearchState extends State<CustomSearch> {
                 final movie = _searchResults[index];
                 return ListTile(
                   contentPadding: EdgeInsets.all(3.0), // Add padding
-                  leading: SizedBox(
+                  leading: Container(
                     child: Image.network(
-                      width: 100, // Increase the width
-                      height: 150, // Increase the height
                       'https://image.tmdb.org/t/p/w154${movie['poster_path']}', // Larger image
+                      fit: BoxFit.cover,
                     ),
                   ),
                   title: Text(
@@ -100,7 +100,12 @@ class _CustomSearchState extends State<CustomSearch> {
                     ),
                   ),
                   onTap: () {
-                    // Handle movie selection
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailMovie(movie: movie),
+                      ),
+                    );
                   },
                 );
               },
