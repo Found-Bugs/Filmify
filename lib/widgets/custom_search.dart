@@ -122,22 +122,14 @@ class _CustomSearchState extends State<CustomSearch> with RouteAware {
                   onChanged: _onSearchChanged,
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.bookmark, color: Colors.black),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Bookmark ditekan!')),
-                  );
-                },
-              ),
             ],
           ),
           if (_searchResults.isNotEmpty)
             Container(
               constraints:
-                  BoxConstraints(maxHeight: 470), // Increase the max height
+                  BoxConstraints(maxHeight: 470), // Sesuaikan maxHeight
               decoration: BoxDecoration(
-                color: Colors.white, // Non-transparent background
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(8.0),
                 boxShadow: [
                   BoxShadow(
@@ -152,30 +144,42 @@ class _CustomSearchState extends State<CustomSearch> with RouteAware {
                 itemCount: _searchResults.length,
                 itemBuilder: (context, index) {
                   final movie = _searchResults[index];
-                  return ListTile(
-                    contentPadding: EdgeInsets.all(3.0), // Add padding
-                    leading: Container(
-                      child: Image.network(
-                        'https://image.tmdb.org/t/p/w154${movie['poster_path']}', // Larger image
-                        fit: BoxFit
-                            .cover, // Ensure the image covers the container
-                      ),
-                    ),
-                    title: Text(
-                      movie['title'],
-                      style: TextStyle(
-                        fontSize: 18, // Increase the font size
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailMovie(id: movie['id']),
+                  return Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 100.0, // Sesuaikan lebar gambar
+                          height: 150.0, // Sesuaikan tinggi gambar
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              'https://image.tmdb.org/t/p/w154${movie['poster_path']}',
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(Icons.broken_image,
+                                    size: 50.0, color: Colors.grey);
+                              },
+                            ),
+                          ),
                         ),
-                      );
-                    },
+                        SizedBox(
+                            width: 10), // Beri jarak antara gambar dan teks
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                movie['title'],
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),

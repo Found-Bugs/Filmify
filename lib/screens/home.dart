@@ -95,7 +95,7 @@ class _HomeState extends State<Home> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(
-                        height: 60), // Space for the floating search bar
+                        height: 70), // Space for the floating search bar
                     const CustomCarousel(),
                     const SizedBox(height: 20),
                     CustomMenu(
@@ -195,7 +195,8 @@ class _HomeState extends State<Home> {
             left: 0,
             right: 0,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 50.0, horizontal: 16),
               child: CustomSearch(),
             ),
           ),
