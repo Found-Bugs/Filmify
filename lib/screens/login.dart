@@ -182,19 +182,19 @@ class _LoginState extends State<Login> {
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
               ),
             ),
-            const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  // Handle forgot password action
-                },
-                child: const Text(
-                  'Forgot Password',
-                  style: TextStyle(color: Color.fromARGB(179, 20, 20, 20)),
-                ),
-              ),
-            ),
+            // const SizedBox(height: 10),
+            // Align(
+            //   alignment: Alignment.centerRight,
+            //   child: TextButton(
+            //     onPressed: () {
+            //       // Handle forgot password action
+            //     },
+            //     child: const Text(
+            //       'Forgot Password',
+            //       style: TextStyle(color: Color.fromARGB(179, 20, 20, 20)),
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 20),
             CustomButton(
               onPressed: _login, // Call the login function
