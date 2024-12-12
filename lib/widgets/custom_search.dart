@@ -10,6 +10,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -135,11 +137,11 @@ class _CustomSearchState extends State<CustomSearch> with RouteAware {
           if (_searchResults.isNotEmpty)
             Container(
               constraints:
-                  BoxConstraints(maxHeight: 470), // Increase the max height
+                  const BoxConstraints(maxHeight: 470), // Increase the max height
               decoration: BoxDecoration(
                 color: Colors.white, // Non-transparent background
                 borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
                     blurRadius: 10.0,
@@ -153,7 +155,7 @@ class _CustomSearchState extends State<CustomSearch> with RouteAware {
                 itemBuilder: (context, index) {
                   final movie = _searchResults[index];
                   return ListTile(
-                    contentPadding: EdgeInsets.all(3.0), // Add padding
+                    contentPadding: const EdgeInsets.all(3.0), // Add padding
                     leading: Container(
                       child: Image.network(
                         'https://image.tmdb.org/t/p/w154${movie['poster_path']}', // Larger image
@@ -163,7 +165,7 @@ class _CustomSearchState extends State<CustomSearch> with RouteAware {
                     ),
                     title: Text(
                       movie['title'],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18, // Increase the font size
                         fontWeight: FontWeight.bold,
                       ),

@@ -188,12 +188,12 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          Positioned(
+          const Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: CustomSearch(),
             ),
           ),

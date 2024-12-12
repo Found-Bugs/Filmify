@@ -20,7 +20,7 @@ class _LoginState extends State<Login> {
   final AuthService _authService = AuthService(); // Instance of AuthService
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String _errorMessage = '';
+  final String _errorMessage = '';
 
   @override
   void dispose() {
@@ -214,7 +214,7 @@ class _LoginState extends State<Login> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Register()),
+                      MaterialPageRoute(builder: (context) => const Register()),
                     );
                   },
                   child: const Text(
