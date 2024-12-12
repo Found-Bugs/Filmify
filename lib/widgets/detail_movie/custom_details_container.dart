@@ -6,7 +6,7 @@ class CustomDetailsContainer extends StatelessWidget {
   final int selectedTabIndex;
   final Function(int) onTabSelected;
   final Map<String, dynamic> movie; // Perbarui tipe data
-  final List<Map<String, String>> reviews; // Data review untuk ReviewContent
+  final List<Map<String, dynamic>> reviews; // Data review untuk ReviewContent
 
   const CustomDetailsContainer({
     required this.selectedTabIndex,

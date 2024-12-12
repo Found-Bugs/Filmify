@@ -28,7 +28,9 @@ class CustomInfoSection extends StatelessWidget {
               const Icon(Icons.calendar_today, size: 24, color: Colors.black),
               const SizedBox(width: 8),
               Text(
-                movie['releaseDate'] ?? 'Unknown',
+                movie['release_date'] != null
+                    ? DateTime.parse(movie['release_date']).year.toString()
+                    : 'Unknown',
                 style: const TextStyle(fontSize: 14, color: Colors.black),
               ),
             ],
@@ -40,7 +42,9 @@ class CustomInfoSection extends StatelessWidget {
               const Icon(Icons.access_time, size: 24, color: Colors.black),
               const SizedBox(width: 8),
               Text(
-                movie['duration'] ?? 'Unknown',
+                movie['runtime'] != null
+                    ? '${movie['runtime']?.toStringAsFixed(0)} minutes'
+                    : 'Unknown',
                 style: const TextStyle(fontSize: 14, color: Colors.black),
               ),
             ],
@@ -52,7 +56,7 @@ class CustomInfoSection extends StatelessWidget {
               const Icon(Icons.movie_filter, size: 24, color: Colors.black),
               const SizedBox(width: 8),
               Text(
-                movie['rating'] ?? 'NR',
+                movie['vote_average']?.toStringAsFixed(1) ?? 'NR',
                 style: const TextStyle(fontSize: 14, color: Colors.black),
               ),
             ],

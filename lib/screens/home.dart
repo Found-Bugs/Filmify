@@ -95,7 +95,7 @@ class _HomeState extends State<Home> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(
-                        height: 60), // Space for the floating search bar
+                        height: 70), // Space for the floating search bar
                     const CustomCarousel(),
                     const SizedBox(height: 20),
                     CustomMenu(
@@ -148,12 +148,13 @@ class _HomeState extends State<Home> {
                     ),
                     const SizedBox(height: 20),
                     CustomMovieCard(
-                      title: 'Recommended Movies (Top Rated)',
+                      title: 'Recommended Movies',
                       movies: topRatedMovies.map((movie) {
                         final genreNames = (movie['genre_ids'] as List)
                             .map((id) => genreMap[id] ?? 'Unknown')
                             .join(', ');
                         return {
+                          'id': movie['id'],
                           'imagePath':
                               'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
                           'title': movie['title'],
@@ -170,6 +171,7 @@ class _HomeState extends State<Home> {
                             .map((id) => genreMap[id] ?? 'Unknown')
                             .join(', ');
                         return {
+                          'id': movie['id'],
                           'imagePath':
                               'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
                           'title': movie['title'],
@@ -188,12 +190,13 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 50.0, horizontal: 16),
               child: CustomSearch(),
             ),
           ),

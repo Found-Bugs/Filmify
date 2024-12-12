@@ -144,6 +144,7 @@ class _GenresState extends State<Genres> {
                             .join(', ');
 
                         return {
+                          'id': movie['id'],
                           'imagePath':
                               'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
                           'title': movie['title'],
