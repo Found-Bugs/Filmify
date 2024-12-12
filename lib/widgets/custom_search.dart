@@ -172,7 +172,7 @@ class _CustomSearchState extends State<CustomSearch> with RouteAware {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DetailMovie(movie: movie),
+                          builder: (context) => DetailMovie(id: movie['id']),
                         ),
                       );
                     },

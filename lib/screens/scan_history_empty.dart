@@ -125,12 +125,12 @@ class CustomHistoryCard extends StatelessWidget {
               return GestureDetector(
                 onTap: () {
                   // Navigasi ke halaman detail
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DetailMovie(movie: movie),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => DetailMovie(movie: movie),
+                  //   ),
+                  // );
                 },
                 child: Container(
                   width: 110,

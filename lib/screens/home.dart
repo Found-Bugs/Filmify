@@ -148,12 +148,13 @@ class _HomeState extends State<Home> {
                     ),
                     const SizedBox(height: 20),
                     CustomMovieCard(
-                      title: 'Recommended Movies (Top Rated)',
+                      title: 'Recommended Movies',
                       movies: topRatedMovies.map((movie) {
                         final genreNames = (movie['genre_ids'] as List)
                             .map((id) => genreMap[id] ?? 'Unknown')
                             .join(', ');
                         return {
+                          'id': movie['id'],
                           'imagePath':
                               'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
                           'title': movie['title'],
@@ -170,6 +171,7 @@ class _HomeState extends State<Home> {
                             .map((id) => genreMap[id] ?? 'Unknown')
                             .join(', ');
                         return {
+                          'id': movie['id'],
                           'imagePath':
                               'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
                           'title': movie['title'],

@@ -17,8 +17,8 @@ class CustomCardContainer extends StatelessWidget {
           height: 400, // Set height for the card
           decoration: BoxDecoration(
             image: DecorationImage(
-              image:
-                  AssetImage(movie['imagePath'] ?? 'assets/images/default.jpg'),
+              image: NetworkImage(
+                  'https://image.tmdb.org/t/p/w500${movie['poster_path']}'),
               fit: BoxFit.cover,
             ),
           ),
@@ -98,8 +98,10 @@ class CustomCardContainer extends StatelessWidget {
               const SizedBox(height: 10),
               // Description
               Text(
-                movie['description'] ?? 'No description available.',
+                movie['tagline'] ?? 'No description available.',
                 style: const TextStyle(fontSize: 16, color: Colors.white70),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
