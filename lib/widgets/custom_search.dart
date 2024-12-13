@@ -144,41 +144,52 @@ class _CustomSearchState extends State<CustomSearch> with RouteAware {
                 itemCount: _searchResults.length,
                 itemBuilder: (context, index) {
                   final movie = _searchResults[index];
-                  return Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 100.0, // Sesuaikan lebar gambar
-                          height: 150.0, // Sesuaikan tinggi gambar
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.network(
-                              'https://image.tmdb.org/t/p/w154${movie['poster_path']}',
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(Icons.broken_image,
-                                    size: 50.0, color: Colors.grey);
-                              },
+                  return GestureDetector(
+                    onTap: () {
+                      // Aksi saat item di-tap
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailMovie(id: movie['id']),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 100.0, // Sesuaikan lebar gambar
+                            height: 150.0, // Sesuaikan tinggi gambar
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.network(
+                                'https://image.tmdb.org/t/p/w154${movie['poster_path']}',
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(Icons.broken_image,
+                                      size: 50.0, color: Colors.grey);
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                            width: 10), // Beri jarak antara gambar dan teks
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                movie['title'],
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                          SizedBox(
+                              width: 10), // Beri jarak antara gambar dan teks
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  movie['title'],
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
