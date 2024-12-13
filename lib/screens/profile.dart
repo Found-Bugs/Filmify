@@ -7,6 +7,7 @@ import 'package:filmify/widgets/custom_button.dart';
 import 'package:filmify/widgets/custom_menu_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:filmify/services/auth_service.dart';
+import 'package:flutter/services.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -172,6 +173,8 @@ class _ProfileState extends State<Profile> {
             ),
             const SizedBox(height: 5),
             TextField(
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               controller: _ageController,
               style: const TextStyle(
                 color: Colors.black, // Black color when typing

@@ -112,28 +112,6 @@ class _HomeState extends State<Home> {
                           },
                         },
                         {
-                          'icon': Icons.tv,
-                          'label': 'Platforms',
-                          'onTap': () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Platforms()),
-                            );
-                          },
-                        },
-                        {
-                          'icon': Icons.theaters,
-                          'label': 'Cinemas',
-                          'onTap': () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Cinemas()),
-                            );
-                          },
-                        },
-                        {
                           'icon': Icons.new_releases,
                           'label': 'New Release',
                           'onTap': () {

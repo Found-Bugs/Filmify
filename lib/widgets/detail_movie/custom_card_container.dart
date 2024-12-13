@@ -1,9 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:filmify/tmdb_api/api_service.dart';
 
-class CustomCardContainer extends StatelessWidget {
-  final Map<String, dynamic> movie; // Perbarui tipe data
+class CustomCardContainer extends StatefulWidget {
+  final Map<String, dynamic> movieDetails;
+  final int movieId;
 
-  const CustomCardContainer({super.key, required this.movie});
+  const CustomCardContainer({
+    super.key,
+    required this.movieDetails,
+    required this.movieId,
+  });
+
+  @override
+  _CustomCardContainerState createState() => _CustomCardContainerState();
+}
+
+class _CustomCardContainerState extends State<CustomCardContainer> {
+  bool isBookmarked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfBookmarked();
+  }
+
+  Future<void> checkIfBookmarked() async {
+    final doc = await FirebaseFirestore.instance
+        .collection('favorites')
+        .doc(widget.movieId.toString())
+        .get();
+    setState(() {
+      isBookmarked = doc.exists;
+    });
+  }
+
+  Future<void> toggleBookmark() async {
+    final movie = {
+      'id': widget.movieId,
+      'title': widget.movieDetails['title'],
+      'genre': widget.movieDetails['genres']
+          .map((genre) => genre['name'])
+          .join(', '),
+      'rating': widget.movieDetails['vote_average'].toString(),
+      'description': widget.movieDetails['overview'],
+      'imageUrl':
+          'https://image.tmdb.org/t/p/w500${widget.movieDetails['poster_path']}',
+    };
+
+    if (isBookmarked) {
+      await FirebaseFirestore.instance
+          .collection('favorites')
+          .doc(widget.movieId.toString())
+          .delete();
+    } else {
+      await FirebaseFirestore.instance
+          .collection('favorites')
+          .doc(widget.movieId.toString())
+          .set(movie);
+    }
+
+    setState(() {
+      isBookmarked = !isBookmarked;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +78,7 @@ class CustomCardContainer extends StatelessWidget {
           decoration: BoxDecoration(
             image: DecorationImage(
               image: NetworkImage(
-                  'https://image.tmdb.org/t/p/w500${movie['poster_path']}'),
+                  'https://image.tmdb.org/t/p/w500${widget.movieDetails['poster_path']}'),
               fit: BoxFit.cover,
             ),
           ),
@@ -48,12 +108,12 @@ class CustomCardContainer extends StatelessWidget {
           top: 30,
           right: 15,
           child: IconButton(
-            icon: const Icon(Icons.bookmark_border),
-            color: Colors.white,
+            icon: Icon(
+              isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+              color: isBookmarked ? Colors.white : Colors.white,
+            ),
             iconSize: 28,
-            onPressed: () {
-              // Handle bookmark action
-            },
+            onPressed: toggleBookmark,
           ),
         ),
 
@@ -88,7 +148,7 @@ class CustomCardContainer extends StatelessWidget {
               const SizedBox(height: 15),
               // Title
               Text(
-                movie['title'] ?? 'Unknown Title',
+                widget.movieDetails['title'] ?? 'Unknown Title',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -98,7 +158,7 @@ class CustomCardContainer extends StatelessWidget {
               const SizedBox(height: 10),
               // Description
               Text(
-                movie['tagline'] ?? 'No description available.',
+                widget.movieDetails['tagline'] ?? 'No description available.',
                 style: const TextStyle(fontSize: 16, color: Colors.white70),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

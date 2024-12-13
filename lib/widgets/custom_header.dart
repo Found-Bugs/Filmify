@@ -33,31 +33,6 @@ class CustomHeader extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText:
-                              hintText, // Menggunakan parameter `hintText`
-                          hintStyle: const TextStyle(color: Colors.grey),
-                          prefixIcon:
-                              const Icon(Icons.search, color: Colors.grey),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    IconButton(
-                      icon: const Icon(Icons.bookmark, color: Colors.black),
-                      iconSize: 30,
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
               ],
             ),
             const SizedBox(height: 20),

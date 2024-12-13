@@ -16,64 +16,36 @@ class NewRelease extends StatefulWidget {
 class _NewReleaseState extends State<NewRelease> {
   List<Map<String, dynamic>> movies = [];
   bool isLoading = true;
-  Map<int, String> genreMap = {};
 
   @override
   void initState() {
     super.initState();
-    fetchGenres().then((_) => fetchMovies());
+    fetchNewReleases();
   }
 
-  Future<void> fetchGenres() async {
-    const String genreUrl =
-        'https://api.themoviedb.org/3/genre/movie/list?api_key=$apiKey&language=en-US';
+  Future<void> fetchNewReleases() async {
+    const String newReleasesUrl =
+        'https://api.themoviedb.org/3/movie/now_playing?api_key=$apiKey&language=en-US&page=1';
 
     try {
-      final response = await http.get(Uri.parse(genreUrl));
+      final response = await http.get(Uri.parse(newReleasesUrl));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          genreMap = {
-            for (var genre in data['genres']) genre['id']: genre['name']
-          };
-        });
-      } else {
-        throw Exception('Failed to load genres');
-      }
-    } catch (e) {
-      debugPrint('Error fetching genres: $e');
-    }
-  }
-
-  Future<void> fetchMovies() async {
-    const String url =
-        'https://api.themoviedb.org/3/movie/upcoming?api_key=$apiKey&language=en-US&page=1';
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          movies = List<Map<String, dynamic>>.from(data['results'].map((movie) {
-            final List<int> genreIds = List<int>.from(movie['genre_ids']);
-            final String genres = genreIds
-                .map((id) => genreMap[id] ?? 'Unknown Genre')
-                .join(', '); // Map genre IDs to names
-
-            return {
-              'id': movie['id'],
-              'title': movie['title'] ?? 'Unknown Title',
-              'genre': genres,
-              'rating': movie['vote_average'].toStringAsFixed(1),
-              'description': movie['overview'] ?? 'No description available',
-              'imageUrl':
-                  'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
-            };
-          }));
+          movies = List<Map<String, dynamic>>.from(data['results'].map((movie) => {
+                'id': movie['id'],
+                'title': movie['title'],
+                'genre': movie['genre_ids'].join(', '), // Assuming genre_ids are available
+                'rating': movie['vote_average'].toString(),
+                'description': movie['overview'],
+                'imageUrl': 'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+              }));
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to load movies');
+        setState(() {
+          isLoading = false;
+        });
       }
     } catch (e) {
       setState(() {
@@ -107,11 +79,13 @@ class _NewReleaseState extends State<NewRelease> {
                         child: Column(
                           children: [
                             CustomFavoriteCard(
+                              movieId: movie['id'],
                               imageUrl: movie['imageUrl'],
                               title: movie['title'],
                               genre: movie['genre'],
                               rating: movie['rating'],
                               description: movie['description'],
+                              showBookmark: false, // Hide bookmark icon
                             ),
                             const SizedBox(height: 20),
                           ],
