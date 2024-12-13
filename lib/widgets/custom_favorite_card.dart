@@ -30,9 +30,9 @@ class CustomFavoriteCard extends StatelessWidget {
               // Movie Poster
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
+                child: Image.network(
                   imageUrl,
-                  height: 180,
+                  height: 170,
                   width: 100,
                   fit: BoxFit.cover,
                 ),
