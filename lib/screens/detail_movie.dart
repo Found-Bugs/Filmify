@@ -15,11 +15,10 @@ class DetailMovie extends StatefulWidget {
 }
 
 class _DetailMovieState extends State<DetailMovie> {
-  int _selectedTabIndex = 0;
-
   Map<String, dynamic>? movieDetails;
-  List<Map<String, dynamic>> reviews = [];
   bool isLoading = true;
+  int _selectedTabIndex = 0;
+  List<Map<String, dynamic>> reviews = [];
 
   @override
   void initState() {
@@ -99,7 +98,10 @@ class _DetailMovieState extends State<DetailMovie> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomCardContainer(movie: movieDetails!),
+            CustomCardContainer(
+              movieDetails: movieDetails!,
+              movieId: widget.id,
+            ),
             CustomInfoSection(movie: movieDetails!),
             CustomDetailsContainer(
               selectedTabIndex: _selectedTabIndex,

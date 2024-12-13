@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dependencies.dart';
@@ -79,5 +80,13 @@ class MovieProvider with ChangeNotifier {
   Future<void> fetchGenres() async {
     _genres = await _apiService.getGenres();
     notifyListeners();
+  }
+}
+
+class FirestoreService {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  Future<void> addFavoriteMovie(Map<String, dynamic> movie) async {
+    await _db.collection('favorites').add(movie);
   }
 }
