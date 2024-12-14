@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:filmify/widgets/custom_favorite_card.dart';
 import 'package:filmify/widgets/custom_header.dart';
@@ -7,13 +8,24 @@ import 'package:filmify/widgets/custom_empty_card.dart';
 
 class Favorite extends StatelessWidget {
   Favorite({super.key});
-
+  
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _db.collection('favorites').snapshots(),
+    final User? user = _auth.currentUser;
+    if (user == null) {
+      return const Center(child: Text('Please log in to see your favorites.'));
+    }
+
+    final userId = user.uid;
+      return StreamBuilder<QuerySnapshot>(
+      stream: _db
+          .collection('users')
+          .doc(userId)
+          .collection('favorites')
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -33,7 +45,6 @@ class Favorite extends StatelessWidget {
             ],
           );
         }
-
         final favorites = snapshot.data!.docs.map((doc) {
           final data = doc.data() as Map<String, dynamic>;
           return {

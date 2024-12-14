@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:filmify/screens/detail_movie.dart';
@@ -27,14 +28,22 @@ class CustomFavoriteCard extends StatefulWidget {
 }
 
 class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool isBookmarked = true;
 
   Future<void> toggleBookmark() async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    final userId = user.uid;
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .doc(widget.movieId.toString());
+        
     if (isBookmarked) {
-      await FirebaseFirestore.instance
-          .collection('favorites')
-          .doc(widget.movieId.toString())
-          .delete();
+      await docRef.delete();
     } else {
       final movie = {
         'id': widget.movieId,
@@ -44,10 +53,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
         'description': widget.description,
         'imageUrl': widget.imageUrl,
       };
-      await FirebaseFirestore.instance
-          .collection('favorites')
-          .doc(widget.movieId.toString())
-          .set(movie);
+      await docRef.set(movie);
     }
 
     setState(() {
