@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:filmify/screens/detail_movie.dart';
@@ -27,14 +28,22 @@ class CustomFavoriteCard extends StatefulWidget {
 }
 
 class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool isBookmarked = true;
 
   Future<void> toggleBookmark() async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    final userId = user.uid;
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .doc(widget.movieId.toString());
+
     if (isBookmarked) {
-      await FirebaseFirestore.instance
-          .collection('favorites')
-          .doc(widget.movieId.toString())
-          .delete();
+      await docRef.delete();
     } else {
       final movie = {
         'id': widget.movieId,
@@ -44,10 +53,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
         'description': widget.description,
         'imageUrl': widget.imageUrl,
       };
-      await FirebaseFirestore.instance
-          .collection('favorites')
-          .doc(widget.movieId.toString())
-          .set(movie);
+      await docRef.set(movie);
     }
 
     setState(() {
@@ -109,8 +115,11 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                           if (widget.showBookmark)
                             IconButton(
                               icon: Icon(
-                                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                                color: isBookmarked ? Colors.white : Colors.white,
+                                isBookmarked
+                                    ? Icons.bookmark
+                                    : Icons.bookmark_border,
+                                color:
+                                    isBookmarked ? Colors.white : Colors.white,
                               ),
                               onPressed: toggleBookmark,
                             ),
@@ -121,20 +130,21 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
+                          color: Color.fromARGB(255, 65, 62, 62),
+                          fontSize: 16,
                         ),
                       ),
                       const SizedBox(height: 5),
                       Row(
                         children: [
-                          const Icon(Icons.star, color: Colors.yellow, size: 16),
+                          const Icon(Icons.star,
+                              color: Colors.yellow, size: 16),
                           const SizedBox(width: 4),
                           Text(
                             widget.rating,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 18,
                             ),
                           ),
                         ],
@@ -145,7 +155,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                         ),
                       ),
                       const SizedBox(height: 5),

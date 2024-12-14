@@ -15,6 +15,7 @@ class NewRelease extends StatefulWidget {
 
 class _NewReleaseState extends State<NewRelease> {
   List<Map<String, dynamic>> movies = [];
+  Map<int, String> genreMap = {};
   bool isLoading = true;
 
   @override
@@ -23,23 +24,47 @@ class _NewReleaseState extends State<NewRelease> {
     fetchNewReleases();
   }
 
+  Future<void> fetchGenres() async {
+    const String genresUrl =
+        'https://api.themoviedb.org/3/genre/movie/list?api_key=$apiKey&language=en-US';
+
+    try {
+      final response = await http.get(Uri.parse(genresUrl));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        genreMap = {
+          for (var genre in data['genres']) genre['id']: genre['name']
+        };
+      }
+    } catch (e) {
+      debugPrint('Error fetching genres: $e');
+    }
+  }
+
   Future<void> fetchNewReleases() async {
     const String newReleasesUrl =
         'https://api.themoviedb.org/3/movie/now_playing?api_key=$apiKey&language=en-US&page=1';
 
     try {
+      // Fetch genres before movies
+      await fetchGenres();
+
       final response = await http.get(Uri.parse(newReleasesUrl));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          movies = List<Map<String, dynamic>>.from(data['results'].map((movie) => {
-                'id': movie['id'],
-                'title': movie['title'],
-                'genre': movie['genre_ids'].join(', '), // Assuming genre_ids are available
-                'rating': movie['vote_average'].toString(),
-                'description': movie['overview'],
-                'imageUrl': 'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
-              }));
+          movies =
+              List<Map<String, dynamic>>.from(data['results'].map((movie) => {
+                    'id': movie['id'],
+                    'title': movie['title'],
+                    'genre': movie['genre_ids']
+                        .map((id) => genreMap[id] ?? 'Unknown')
+                        .join(', '),
+                    'rating': movie['vote_average'].toStringAsFixed(1),
+                    'description': movie['overview'],
+                    'imageUrl':
+                        'https://image.tmdb.org/t/p/w500${movie['poster_path']}',
+                  }));
           isLoading = false;
         });
       } else {
@@ -82,7 +107,7 @@ class _NewReleaseState extends State<NewRelease> {
                               movieId: movie['id'],
                               imageUrl: movie['imageUrl'],
                               title: movie['title'],
-                              genre: movie['genre'],
+                              genre: movie['genre'], // Display genre names
                               rating: movie['rating'],
                               description: movie['description'],
                               showBookmark: false, // Hide bookmark icon

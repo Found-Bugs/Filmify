@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:filmify/tmdb_api/api_service.dart';
 
 class CustomCardContainer extends StatefulWidget {
@@ -18,6 +19,7 @@ class CustomCardContainer extends StatefulWidget {
 
 class _CustomCardContainerState extends State<CustomCardContainer> {
   bool isBookmarked = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -26,7 +28,13 @@ class _CustomCardContainerState extends State<CustomCardContainer> {
   }
 
   Future<void> checkIfBookmarked() async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    final userId = user.uid;
     final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
         .collection('favorites')
         .doc(widget.movieId.toString())
         .get();
@@ -36,6 +44,16 @@ class _CustomCardContainerState extends State<CustomCardContainer> {
   }
 
   Future<void> toggleBookmark() async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    final userId = user.uid;
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .doc(widget.movieId.toString());
+
     final movie = {
       'id': widget.movieId,
       'title': widget.movieDetails['title'],
@@ -49,15 +67,9 @@ class _CustomCardContainerState extends State<CustomCardContainer> {
     };
 
     if (isBookmarked) {
-      await FirebaseFirestore.instance
-          .collection('favorites')
-          .doc(widget.movieId.toString())
-          .delete();
+      await docRef.delete();
     } else {
-      await FirebaseFirestore.instance
-          .collection('favorites')
-          .doc(widget.movieId.toString())
-          .set(movie);
+      await docRef.set(movie);
     }
 
     setState(() {

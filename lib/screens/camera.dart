@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:filmify/services/cloudinary_service.dart';
+import 'dart:math' as math;
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -21,6 +22,7 @@ class _CameraState extends State<Camera> {
   int _selectedCameraIndex = 0;
   String? _imagePath;
   bool _isUploading = false;
+  String? _prediction;
 
   @override
   void initState() {
@@ -115,6 +117,7 @@ class _CameraState extends State<Camera> {
 
       if (imageUrl != null) {
         _showUploadSuccessDialog(imageUrl);
+        await _sendImageUrlToFastAPI(imageUrl);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -125,6 +128,27 @@ class _CameraState extends State<Camera> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _sendImageUrlToFastAPI(String imageUrl) async {
+    final response = await http.post(
+      Uri.parse('http://127.0.0.1:8000/predict/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'image_url': imageUrl,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _prediction = data['prediction']['predicted_class'];
+      });
+    } else {
+      throw Exception('Failed to get prediction');
     }
   }
 
@@ -198,7 +222,15 @@ class _CameraState extends State<Camera> {
       body: Stack(
         children: [
           if (_imagePath == null)
-            CameraPreview(_cameraController)
+            Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.rotationY(
+                  _cameras[_selectedCameraIndex].lensDirection ==
+                          CameraLensDirection.front
+                      ? math.pi
+                      : 0),
+              child: CameraPreview(_cameraController),
+            )
           else
             Image.file(File(_imagePath!)),
           Align(
