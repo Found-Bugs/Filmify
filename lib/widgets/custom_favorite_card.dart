@@ -41,7 +41,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
         .doc(userId)
         .collection('favorites')
         .doc(widget.movieId.toString());
-        
+
     if (isBookmarked) {
       await docRef.delete();
     } else {
@@ -115,8 +115,11 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                           if (widget.showBookmark)
                             IconButton(
                               icon: Icon(
-                                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                                color: isBookmarked ? Colors.white : Colors.white,
+                                isBookmarked
+                                    ? Icons.bookmark
+                                    : Icons.bookmark_border,
+                                color:
+                                    isBookmarked ? Colors.white : Colors.white,
                               ),
                               onPressed: toggleBookmark,
                             ),
@@ -127,20 +130,21 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
+                          color: Color.fromARGB(255, 65, 62, 62),
+                          fontSize: 16,
                         ),
                       ),
                       const SizedBox(height: 5),
                       Row(
                         children: [
-                          const Icon(Icons.star, color: Colors.yellow, size: 16),
+                          const Icon(Icons.star,
+                              color: Colors.yellow, size: 16),
                           const SizedBox(width: 4),
                           Text(
                             widget.rating,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 18,
                             ),
                           ),
                         ],
@@ -151,7 +155,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 16,
                         ),
                       ),
                       const SizedBox(height: 5),
