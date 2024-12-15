@@ -13,7 +13,6 @@ class FirstGetStarted extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScaffold(
       backgroundImage: backgroundGetStarted,
-      spacing: 0.61,
       child: CustomCard(
         backgroundColor: customBackgroundColorDark,
         borderRadius: 0.0,
