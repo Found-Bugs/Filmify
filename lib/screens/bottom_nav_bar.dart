@@ -2,7 +2,7 @@ import 'package:filmify/screens/camera.dart';
 import 'package:filmify/screens/favorite.dart';
 import 'package:filmify/screens/home.dart';
 import 'package:filmify/screens/profile.dart';
-import 'package:filmify/screens/scan_history_empty.dart';
+import 'package:filmify/screens/scan_history.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {
