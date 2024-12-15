@@ -118,7 +118,7 @@ class _CameraState extends State<Camera> {
       });
 
       if (imageUrl != null) {
-        _showUploadSuccessDialog(imageUrl);
+        await _processImage(imageUrl);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -132,57 +132,46 @@ class _CameraState extends State<Camera> {
     }
   }
 
-  void _showUploadSuccessDialog(String imageUrl) {
+  Future<void> _processImage(String imageUrl) async {
+    final response = await http.post(
+      Uri.parse('https://bcf4-182-253-176-146.ngrok-free.app/predict/url/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'image_url': imageUrl}),
+    );
+
+    if (response.statusCode == 200) {
+      final prediction = jsonDecode(response.body)['prediction'];
+      _showPredictionDialog(prediction);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memproses gambar: ${response.body}')),
+      );
+    }
+  }
+
+  void _showPredictionDialog(Map<String, dynamic> prediction) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.transparent,
-          contentPadding: EdgeInsets.zero,
-          content: ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Container(
-              color: Colors.green,
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'UPLOAD BERHASIL',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  const Text(
-                    'GAMBAR BERHASIL DIUNGGAH',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  Image.network(imageUrl), // Display uploaded image
-                  const SizedBox(height: 8.0),
-                  Text(
-                    imageUrl,
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Oke'),
-                  ),
-                ],
-              ),
-            ),
+          title: Text('Prediksi Ekspresi Wajah'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Ekspresi: ${prediction['predicted_class']}'),
+              Text('Kepercayaan: ${(prediction['confidence'] * 100).toStringAsFixed(2)}%'),
+              // Display confidence scores for each class
+              ...prediction['confidence_scores'].entries.map((entry) {
+                return Text('${entry.key}: ${(entry.value * 100).toStringAsFixed(2)}%');
+              }).toList(),
+            ],
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Oke'),
+            ),
+          ],
         );
       },
     );
