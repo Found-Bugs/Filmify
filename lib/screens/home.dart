@@ -157,10 +157,6 @@ class _HomeState extends State<Home> {
                       }).toList(),
                     ),
                     const SizedBox(height: 20),
-                    CustomMovieCard(
-                      title: 'Suggestion From Scanning',
-                      movies: movieListB,
-                    ),
                   ],
                 ),
               ),
