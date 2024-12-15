@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:filmify/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:camera/camera.dart';
@@ -142,6 +144,13 @@ class _CameraState extends State<Camera> {
     if (response.statusCode == 200) {
       final prediction = jsonDecode(response.body)['prediction'];
       _showPredictionDialog(prediction);
+
+      // Save prediction and image URL to Firestore
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final authService = AuthService();
+        await authService.savePredictionToHistory(user.uid, imageUrl, prediction);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal memproses gambar: ${response.body}')),
@@ -158,8 +167,8 @@ class _CameraState extends State<Camera> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Ekspresi: ${prediction['predicted_class']}'),
-              Text('Kepercayaan: ${(prediction['confidence'] * 100).toStringAsFixed(2)}%'),
+              Text('Expression: ${prediction['predicted_class']}'),
+              Text('Result: ${(prediction['confidence'] * 100).toStringAsFixed(2)}%'),
               // Display confidence scores for each class
               ...prediction['confidence_scores'].entries.map((entry) {
                 return Text('${entry.key}: ${(entry.value * 100).toStringAsFixed(2)}%');

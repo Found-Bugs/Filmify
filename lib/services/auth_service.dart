@@ -66,4 +66,28 @@ class AuthService {
       print('Error updating user profile: $e');
     }
   }
+
+  // Save prediction result and image URL to Firestore
+  Future<void> savePredictionToHistory(String userId, String imageUrl, Map<String, dynamic> prediction) async {
+    try {
+      await _firestore.collection('users').doc(userId).collection('history').add({
+        'image_url': imageUrl,
+        'prediction': prediction,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error saving prediction to history: $e');
+    }
+  }
+
+  // Fetch prediction history for the current user
+  Future<List<Map<String, dynamic>>> fetchPredictionHistory(String userId) async {
+    try {
+      final snapshot = await _firestore.collection('users').doc(userId).collection('history').orderBy('timestamp', descending: true).get();
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    } catch (e) {
+      print('Error fetching prediction history: $e');
+      return [];
+    }
+  }
 }
