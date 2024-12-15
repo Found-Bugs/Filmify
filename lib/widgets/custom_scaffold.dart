@@ -1,22 +1,23 @@
-import 'package:flutter/material.dart';
 import 'package:filmify/utils/colors.dart';
+import 'package:flutter/material.dart';
 
 class CustomScaffold extends StatelessWidget {
   final String backgroundImage; // Path untuk gambar background
   final Widget child; // Isi dari Container di Stack
   final Widget? centeredSection; // Parameter opsional untuk bagian tengah
-  final double? spacing;
 
   const CustomScaffold({
     super.key,
     required this.backgroundImage,
     required this.child,
     this.centeredSection,
-    this.spacing,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Checking if the keyboard is visible
+    final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
@@ -32,27 +33,26 @@ class CustomScaffold extends StatelessWidget {
               color: customBackgroundColorDark.withOpacity(0.8),
             ),
             SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (centeredSection != null) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 75.0),
-                        child: centeredSection!,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (centeredSection != null && !keyboardVisible) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 75.0,
                       ),
-                    ],
-                    if (spacing != null)
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * spacing!,
-                      ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: child,
+                      child: centeredSection!,
                     ),
                   ],
-                ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment
+                          .bottomCenter, // Content will align to the bottom
+                      child: child, // Main content (like form, buttons)
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
