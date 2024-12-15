@@ -8,7 +8,7 @@ import 'package:filmify/widgets/custom_empty_card.dart';
 
 class Favorite extends StatelessWidget {
   Favorite({super.key});
-  
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -20,7 +20,7 @@ class Favorite extends StatelessWidget {
     }
 
     final userId = user.uid;
-      return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<QuerySnapshot>(
       stream: _db
           .collection('users')
           .doc(userId)
@@ -52,7 +52,8 @@ class Favorite extends StatelessWidget {
             'imageUrl': data['imageUrl'],
             'title': data['title'],
             'genre': data['genre'],
-            'rating': data['rating'],
+            'rating':
+                double.parse(data['rating'].toString()).toStringAsFixed(1),
             'description': data['description'],
           };
         }).toList();
