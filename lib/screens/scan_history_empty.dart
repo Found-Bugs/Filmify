@@ -2,9 +2,37 @@ import 'package:filmify/data/data_movie_A.dart';
 import 'package:filmify/screens/detail_movie.dart';
 import 'package:filmify/widgets/custom_header.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:filmify/services/auth_service.dart';
 
-class ScanHistory extends StatelessWidget {
+class ScanHistory extends StatefulWidget {
   const ScanHistory({super.key});
+
+  @override
+  _ScanHistoryState createState() => _ScanHistoryState();
+}
+
+class _ScanHistoryState extends State<ScanHistory> {
+  List<Map<String, dynamic>> _history = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchHistory();
+  }
+
+  Future<void> _fetchHistory() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final authService = AuthService();
+      final history = await authService.fetchPredictionHistory(user.uid);
+      setState(() {
+        _history = history;
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,28 +72,39 @@ class ScanHistory extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // Teks Expression
-              const Text(
-                "Expression : Sad",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              // Tampilkan riwayat scan
+              if (_isLoading)
+                Center(child: CircularProgressIndicator())
+              else if (_history.isEmpty)
+                Center(child: Text('No history found.'))
+              else
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _history.length,
+                  itemBuilder: (context, index) {
+                    final item = _history[index];
+                    return ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          item['image_url'],
+                          fit: BoxFit.cover,
+                          width: 110,
+                          height: 160,
+                        ),
+                      ),
+                      title: Text(
+                        item['prediction']['predicted_class'],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                      ),
+                      subtitle: Text(
+                        'Confidence: ${(item['prediction']['confidence'] * 100).toStringAsFixed(2)}%',
+                      ),
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(height: 10),
-              // Teks Recommendation Genres
-              const Text(
-                "Recommendation Genres : Comedy",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 20),
-              // Daftar Film
-              CustomHistoryCard(
-                movies: movieListA,
-              ),
             ],
           ),
         ),
@@ -73,9 +112,6 @@ class ScanHistory extends StatelessWidget {
     );
   }
 }
-
-// import 'package:filmify/screens/detail_movie.dart';
-// import 'package:flutter/material.dart';
 
 class CustomHistoryCard extends StatelessWidget {
   final List<Map<String, dynamic>> movies; // Ubah tipe data
@@ -99,13 +135,6 @@ class CustomHistoryCard extends StatelessWidget {
               final movie = movies[index];
               return GestureDetector(
                 onTap: () {
-                  // Navigasi ke halaman detail
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => DetailMovie(movie: movie),
-                  //   ),
-                  // );
                 },
                 child: Container(
                   width: 110,
