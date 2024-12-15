@@ -8,6 +8,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:filmify/services/cloudinary_service.dart';
+import 'dart:math' as math;
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -35,6 +36,13 @@ class _CameraState extends State<Camera> {
     try {
       _cameras = await availableCameras();
       if (_cameras.isEmpty) throw Exception("Kamera tidak ditemukan");
+
+      // Select the front camera
+      _selectedCameraIndex = _cameras.indexWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.front);
+      if (_selectedCameraIndex == -1) {
+        throw Exception("Kamera depan tidak ditemukan");
+      }
 
       _cameraController = CameraController(
         _cameras[_selectedCameraIndex],
@@ -206,7 +214,11 @@ class _CameraState extends State<Camera> {
       body: Stack(
         children: [
           if (_uploadedImageUrl == null)
-            CameraPreview(_cameraController)
+            Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.rotationY(math.pi), // Mirror the camera preview
+              child: CameraPreview(_cameraController),
+            )
           else
             Image.network(_uploadedImageUrl!),
           Align(

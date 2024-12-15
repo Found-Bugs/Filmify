@@ -46,12 +46,18 @@ dependencies:
   image_picker: ^1.1.2
   shared_preferences: ^2.0.6
   url_launcher: ^6.3.1
+  flutter_launcher_icons: ^0.13.1
 
 
 dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "lib/assets/images/app_show.jpg"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
