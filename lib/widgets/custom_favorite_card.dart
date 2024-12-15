@@ -72,18 +72,27 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
           ),
         );
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            elevation: 0,
-            color: Colors.transparent,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Movie Poster
-                ClipRRect(
+      child: Card(
+        elevation: 3, // Tambahkan elevation untuk memberi efek bayangan
+        color: Colors.blue.shade900, // Gunakan warna abu-abu
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), // Tambahkan border radius
+        ),
+        child: Padding(
+          // Gunakan padding untuk ruang internal
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Movie Poster
+              Container(
+                decoration: BoxDecoration(
+                  border:
+                      Border.all(color: Colors.white, width: 3), // Border putih
                   borderRadius: BorderRadius.circular(10),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(7),
                   child: Image.network(
                     widget.imageUrl,
                     height: 170,
@@ -91,96 +100,81 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(width: 15),
+              ),
+              const SizedBox(width: 15),
 
-                // Movie Details
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              widget.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                          if (widget.showBookmark)
-                            IconButton(
-                              icon: Icon(
-                                isBookmarked
-                                    ? Icons.bookmark
-                                    : Icons.bookmark_border,
-                                color:
-                                    isBookmarked ? Colors.white : Colors.white,
-                              ),
-                              onPressed: toggleBookmark,
-                            ),
-                        ],
-                      ),
-                      Text(
-                        widget.genre,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 65, 62, 62),
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          const Icon(Icons.star,
-                              color: Colors.yellow, size: 16),
-                          const SizedBox(width: 4),
-                          Text(
-                            widget.rating,
+              // Movie Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white, // Warna teks putih
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        widget.description,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
                         ),
+                        if (widget.showBookmark)
+                          IconButton(
+                            icon: Icon(
+                              isBookmarked
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
+                              color: isBookmarked ? Colors.white : Colors.white,
+                            ),
+                            onPressed: toggleBookmark,
+                          ),
+                      ],
+                    ),
+                    Text(
+                      widget.genre,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white70, // Warna teks abu-abu muda
+                        fontSize: 16,
                       ),
-                      const SizedBox(height: 5),
-                      ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                        ),
-                        label: const Text("Play Trailer"),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.yellow, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.rating,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.white, // Warna teks putih
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      widget.description,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white, // Warna teks putih
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
