@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:filmify/screens/genres.dart';
-import 'package:filmify/screens/cinemas.dart';
 import 'package:filmify/screens/new_release.dart';
-import 'package:filmify/screens/platforms.dart';
 import 'package:filmify/widgets/custom_carousel.dart';
 import 'package:filmify/widgets/custom_menu.dart';
 import 'package:filmify/widgets/custom_movie_card.dart';
