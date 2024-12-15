@@ -14,7 +14,6 @@ class ThridGetStarted extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScaffold(
       backgroundImage: backgroundWelcome,
-      spacing: 0.24,
       centeredSection: Column(
         children: [
           const Center(
