@@ -6,7 +6,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:filmify/services/cloudinary_service.dart';
-import 'dart:math' as math;
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -22,7 +21,7 @@ class _CameraState extends State<Camera> {
   int _selectedCameraIndex = 0;
   String? _imagePath;
   bool _isUploading = false;
-  String? _prediction;
+  String? _uploadedImageUrl;
 
   @override
   void initState() {
@@ -96,6 +95,8 @@ class _CameraState extends State<Camera> {
       setState(() {
         _imagePath = imagePath;
       });
+
+      await _uploadImage(); // Upload image immediately after taking picture
     } catch (e) {
       print('Error mengambil gambar: $e');
     }
@@ -113,11 +114,11 @@ class _CameraState extends State<Camera> {
 
       setState(() {
         _isUploading = false;
+        _uploadedImageUrl = imageUrl;
       });
 
       if (imageUrl != null) {
-        _showUploadSuccessDialog(imageUrl);
-        await _sendImageUrlToFastAPI(imageUrl);
+        await _processImage(imageUrl);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -131,75 +132,49 @@ class _CameraState extends State<Camera> {
     }
   }
 
-  Future<void> _sendImageUrlToFastAPI(String imageUrl) async {
+  Future<void> _processImage(String imageUrl) async {
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/predict/'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'image_url': imageUrl,
-      }),
+      Uri.parse('https://bcf4-182-253-176-146.ngrok-free.app/predict/url/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'image_url': imageUrl}),
     );
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      setState(() {
-        _prediction = data['prediction']['predicted_class'];
-      });
+      final prediction = jsonDecode(response.body)['prediction'];
+      _showPredictionDialog(prediction);
     } else {
-      throw Exception('Failed to get prediction');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memproses gambar: ${response.body}')),
+      );
     }
   }
 
-  void _showUploadSuccessDialog(String imageUrl) {
+  void _showPredictionDialog(Map<String, dynamic> prediction) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor:
-              Colors.transparent, // Make the AlertDialog background transparent
-          contentPadding: EdgeInsets.zero, // Remove default padding
-          content: ClipRRect(
-            borderRadius: BorderRadius.circular(20.0), // Set the border radius
-            child: Container(
-              color: Colors.green, // Set the background color to green
-              padding: const EdgeInsets.all(16.0), // Add padding inside the container
-              child: const Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'UPLOAD BERHASIL',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors
-                          .white, // Set text color to white for better contrast
-                    ),
-                  ),
-                  SizedBox(
-                      height:
-                          8.0), // Add some space between the title and content
-                  Text(
-                    'GAMBAR BERHASIL DIUNGGAH',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors
-                          .white, // Set text color to white for better contrast
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          title: Text('Prediksi Ekspresi Wajah'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Ekspresi: ${prediction['predicted_class']}'),
+              Text('Kepercayaan: ${(prediction['confidence'] * 100).toStringAsFixed(2)}%'),
+              // Display confidence scores for each class
+              ...prediction['confidence_scores'].entries.map((entry) {
+                return Text('${entry.key}: ${(entry.value * 100).toStringAsFixed(2)}%');
+              }).toList(),
+            ],
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Oke'),
+            ),
+          ],
         );
       },
     );
-
-    // Automatically close the dialog and navigate back to home after a delay
-    Future.delayed(const Duration(milliseconds: 1700), () {
-      Navigator.of(context).pop(); // Close the dialog
-      Navigator.of(context).pop(); // Navigate back to home
-    });
   }
 
   @override
@@ -221,18 +196,10 @@ class _CameraState extends State<Camera> {
     return Scaffold(
       body: Stack(
         children: [
-          if (_imagePath == null)
-            Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.rotationY(
-                  _cameras[_selectedCameraIndex].lensDirection ==
-                          CameraLensDirection.front
-                      ? math.pi
-                      : 0),
-              child: CameraPreview(_cameraController),
-            )
+          if (_uploadedImageUrl == null)
+            CameraPreview(_cameraController)
           else
-            Image.file(File(_imagePath!)),
+            Image.network(_uploadedImageUrl!),
           Align(
             alignment: Alignment.center,
             child: SizedBox(
@@ -319,44 +286,20 @@ class _CameraState extends State<Camera> {
                     icon: const Icon(Icons.arrow_back, color: Colors.black),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  if (_imagePath == null)
-                    GestureDetector(
-                      onTap: _takePicture,
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black, width: 2),
-                        ),
-                        child: const Icon(Icons.camera_alt,
-                            size: 36, color: Colors.black),
+                  GestureDetector(
+                    onTap: _takePicture,
+                    child: Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.black, width: 2),
                       ),
-                    )
-                  else
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _imagePath = null;
-                            });
-                          },
-                          child: const Text('Retake'),
-                        ),
-                        const SizedBox(width: 16),
-                        ElevatedButton(
-                          onPressed: _uploadImage,
-                          child: _isUploading
-                              ? const CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
-                                )
-                              : const Text('Upload'),
-                        ),
-                      ],
+                      child: const Icon(Icons.camera_alt,
+                          size: 36, color: Colors.black),
                     ),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.cameraswitch, color: Colors.black),
                     onPressed: _switchCamera,
