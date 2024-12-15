@@ -62,6 +62,21 @@ class TMDBApiService {
       throw Exception('Failed to load genres');
     }
   }
+
+  Future<List<Map<String, dynamic>>> getMoviesByGenre(int genreId) async {
+    final response = await http.get(Uri.parse(
+        '$baseUrl/discover/movie?api_key=$apiKey&with_genres=$genreId'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return List<Map<String, dynamic>>.from(data['results'].map((movie) => {
+            'id': movie['id'],
+            'title': movie['title'],
+            'poster_path': movie['poster_path'],
+          }));
+    } else {
+      throw Exception('Failed to load movies for genre $genreId');
+    }
+  }
 }
 
 class MovieProvider with ChangeNotifier {
