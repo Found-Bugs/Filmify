@@ -30,7 +30,7 @@ class CustomScaffold extends StatelessWidget {
         child: Stack(
           children: [
             Container(
-              color: customBackgroundColorDark.withOpacity(0.8),
+              color: customOpacityColor.withOpacity(0.7),
             ),
             SafeArea(
               child: Column(
