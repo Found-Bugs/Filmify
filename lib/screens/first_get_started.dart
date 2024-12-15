@@ -14,7 +14,7 @@ class FirstGetStarted extends StatelessWidget {
     return CustomScaffold(
       backgroundImage: backgroundGetStarted,
       child: CustomCard(
-        backgroundColor: customBackgroundColorDark,
+        backgroundColor: customBackgroundColorLight,
         borderRadius: 0.0,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -23,7 +23,7 @@ class FirstGetStarted extends StatelessWidget {
               'Selamat Datang di Filmify!',
               style: TextStyle(
                 fontSize: 24,
-                color: customTeksColorLight,
+                color: customTeksColorDark,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -32,7 +32,7 @@ class FirstGetStarted extends StatelessWidget {
               'Temukan dunia film tanpa batas!',
               style: TextStyle(
                 fontSize: 16,
-                color: customTeksColorLight,
+                color: customTeksColorDark,
               ),
               textAlign: TextAlign.center,
             ),
@@ -41,7 +41,7 @@ class FirstGetStarted extends StatelessWidget {
               'Jelajahi koleksi film, review, dan rekomendasi yang akan memanjakan matamu. Satu tempat untuk segala hal tentang film yang kamu cintai.',
               style: TextStyle(
                 fontSize: 14,
-                color: customTeksColorLight.withOpacity(0.7),
+                color: customTeksColorDark.withOpacity(0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -51,7 +51,7 @@ class FirstGetStarted extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: customTeksColorLight,
+                color: customTeksColorDark,
               ),
               textAlign: TextAlign.center,
             ),
@@ -65,7 +65,7 @@ class FirstGetStarted extends StatelessWidget {
                 );
               },
               text: 'Next',
-              backgroundColor: customButtonColorDark,
+              backgroundColor: customButtonColorDark.shade600,
               textColor: customTeksColorLight,
             ),
           ],

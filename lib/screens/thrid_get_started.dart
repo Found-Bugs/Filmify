@@ -40,7 +40,7 @@ class ThridGetStarted extends StatelessWidget {
         ],
       ),
       child: CustomCard(
-        backgroundColor: customBackgroundColorDark,
+        backgroundColor: customBackgroundColorDark.shade900,
         borderRadius: 20.0,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -70,7 +70,7 @@ class ThridGetStarted extends StatelessWidget {
                 );
               },
               text: 'Login',
-              backgroundColor: customButtonColorDark,
+              backgroundColor: customButtonColorDark.shade600,
               textColor: customTeksColorLight,
             ),
             const SizedBox(height: 10),
