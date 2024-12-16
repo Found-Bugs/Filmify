@@ -144,7 +144,7 @@ class _CameraState extends State<Camera> {
 
   Future<void> _processImage(String imageUrl) async {
     final response = await http.post(
-      Uri.parse('https://bcf4-182-253-176-146.ngrok-free.app/predict/url/'),
+      Uri.parse('https://cc70-114-6-25-184.ngrok-free.app/predict/url/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'image_url': imageUrl}),
     );
@@ -157,7 +157,8 @@ class _CameraState extends State<Camera> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         final authService = AuthService();
-        await authService.savePredictionToHistory(user.uid, imageUrl, prediction);
+        await authService.savePredictionToHistory(
+            user.uid, imageUrl, prediction);
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -176,10 +177,12 @@ class _CameraState extends State<Camera> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Expression: ${prediction['predicted_class']}'),
-              Text('Result: ${(prediction['confidence'] * 100).toStringAsFixed(2)}%'),
+              Text(
+                  'Result: ${(prediction['confidence'] * 100).toStringAsFixed(2)}%'),
               // Display confidence scores for each class
               ...prediction['confidence_scores'].entries.map((entry) {
-                return Text('${entry.key}: ${(entry.value * 100).toStringAsFixed(2)}%');
+                return Text(
+                    '${entry.key}: ${(entry.value * 100).toStringAsFixed(2)}%');
               }).toList(),
             ],
           ),
@@ -216,7 +219,8 @@ class _CameraState extends State<Camera> {
           if (_uploadedImageUrl == null)
             Transform(
               alignment: Alignment.center,
-              transform: Matrix4.rotationY(math.pi), // Mirror the camera preview
+              transform:
+                  Matrix4.rotationY(math.pi), // Mirror the camera preview
               child: CameraPreview(_cameraController),
             )
           else
