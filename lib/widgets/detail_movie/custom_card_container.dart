@@ -137,27 +137,6 @@ class _CustomCardContainerState extends State<CustomCardContainer> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Play Trailer Button
-              ElevatedButton.icon(
-                onPressed: () {
-                  // Handle play trailer action
-                },
-                icon: const Icon(
-                  Icons.play_arrow,
-                  color: Colors.white,
-                ),
-                label: const Text(
-                  'Play Trailer',
-                  style: TextStyle(color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue, // Button color
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30), // Rounded corners
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
               // Title
               Text(
                 widget.movieDetails['title'] ?? 'Unknown Title',

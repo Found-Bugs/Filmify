@@ -77,6 +77,7 @@ class _FavoriteState extends State<Favorite> {
                       genre: movie["genre"]!,
                       rating: movie["rating"]!,
                       description: movie["description"]!,
+                      showBookmark: true,
                       onBookmarkToggle: () => _toggleBookmark(movie["movieId"]!),
                     ),
                     const SizedBox(height: 20),
@@ -107,7 +108,5 @@ class _FavoriteState extends State<Favorite> {
       // Add the movie back to favorites if needed
       // You can pass the movie details to this method if required
     }
-
-    setState(() {});
   }
 }

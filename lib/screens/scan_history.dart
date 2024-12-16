@@ -143,9 +143,15 @@ class _ScanHistoryState extends State<ScanHistory> {
                               ),
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _removeHistoryItem(index),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.blue),
+                              onPressed: () => _removeHistoryItem(index),
+                            ),
                           ),
                         ],
                       ),
