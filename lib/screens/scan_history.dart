@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:filmify/screens/detail_movie.dart';
 import 'package:filmify/tmdb_api/api_service.dart';
 import 'package:filmify/utils/image.dart';
@@ -68,7 +69,21 @@ class _ScanHistoryState extends State<ScanHistory> {
       recommendedMovies.addAll(movies);
     }
 
+    // Shuffle the list to make the recommendations random
+    recommendedMovies.shuffle(Random());
+
     return recommendedMovies;
+  }
+
+  Future<void> _removeHistoryItem(int index) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final authService = AuthService();
+      await authService.removePredictionFromHistory(user.uid, _history[index]['id']);
+      setState(() {
+        _history.removeAt(index);
+      });
+    }
   }
 
   @override
@@ -78,15 +93,14 @@ class _ScanHistoryState extends State<ScanHistory> {
       hintText: "Cari Judul Film",
       content: [
         const SizedBox(height: 20),
-        // Tampilkan riwayat scan jika tidak dalam mode loading
         if (_isLoading)
           const Center(child: CircularProgressIndicator())
         else if (_history.isEmpty)
           const CustomEmptyCard(
             imagePath: scanHistoryEmpty,
-            mainText: 'Oops! Your history is empty', // Teks utama
+            mainText: 'Oops! Your history is empty',
             descriptionText:
-                'Scan your face to find the perfect movie recommendation for how you’re feeling right now.', // Deskripsi
+                'Scan your face to find the perfect movie recommendation for how you’re feeling right now.',
           )
         else
           Column(
@@ -96,7 +110,6 @@ class _ScanHistoryState extends State<ScanHistory> {
               (index) {
                 final item = _history[index];
 
-                // Wrap each item into its own container
                 return Container(
                   padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(bottom: 20),
@@ -118,17 +131,25 @@ class _ScanHistoryState extends State<ScanHistory> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Center(
-                        child: Text(
-                          "Scan Result",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Center(
+                            child: Text(
+                              "Scan Result",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _removeHistoryItem(index),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 20),
-                      // Using Row to control both image size and spacing
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -137,12 +158,11 @@ class _ScanHistoryState extends State<ScanHistory> {
                             child: Image.network(
                               item['image_url'],
                               fit: BoxFit.cover,
-                              width: 140, // Increased width
-                              height: 210, // Increased height
+                              width: 140,
+                              height: 210,
                             ),
                           ),
-                          const SizedBox(
-                              width: 16), // Spacing between image and text
+                          const SizedBox(width: 16),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,8 +211,7 @@ class _ScanHistoryState extends State<ScanHistory> {
                       ),
                       const SizedBox(height: 20),
                       if (item['recommendations'].isEmpty)
-                        const Center(
-                            child: Text('No recommendations available.'))
+                        const Center(child: Text('No recommendations available.'))
                       else
                         SizedBox(
                           height: 200,
@@ -203,7 +222,6 @@ class _ScanHistoryState extends State<ScanHistory> {
                               final movie = item['recommendations'][index];
                               return GestureDetector(
                                 onTap: () {
-                                  // Navigate to detail page
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(

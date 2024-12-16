@@ -6,9 +6,14 @@ import 'package:filmify/widgets/custom_header.dart';
 import 'package:filmify/utils/image.dart';
 import 'package:filmify/widgets/custom_empty_card.dart';
 
-class Favorite extends StatelessWidget {
-  Favorite({super.key});
+class Favorite extends StatefulWidget {
+  const Favorite({super.key});
 
+  @override
+  _FavoriteState createState() => _FavoriteState();
+}
+
+class _FavoriteState extends State<Favorite> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -72,6 +77,7 @@ class Favorite extends StatelessWidget {
                       genre: movie["genre"]!,
                       rating: movie["rating"]!,
                       description: movie["description"]!,
+                      onBookmarkToggle: () => _toggleBookmark(movie["movieId"]!),
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -81,5 +87,27 @@ class Favorite extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _toggleBookmark(int movieId) async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    final userId = user.uid;
+    final docRef = _db
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .doc(movieId.toString());
+
+    final doc = await docRef.get();
+    if (doc.exists) {
+      await docRef.delete();
+    } else {
+      // Add the movie back to favorites if needed
+      // You can pass the movie details to this method if required
+    }
+
+    setState(() {});
   }
 }

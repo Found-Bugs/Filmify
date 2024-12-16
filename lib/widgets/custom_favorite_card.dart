@@ -1,65 +1,27 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:filmify/screens/detail_movie.dart';
 
-class CustomFavoriteCard extends StatefulWidget {
+class CustomFavoriteCard extends StatelessWidget {
+  final int movieId;
   final String imageUrl;
   final String title;
   final String genre;
   final String rating;
   final String description;
-  final int movieId;
   final bool showBookmark;
+  final VoidCallback? onBookmarkToggle;
 
   const CustomFavoriteCard({
     super.key,
+    required this.movieId,
     required this.imageUrl,
     required this.title,
     required this.genre,
     required this.rating,
     required this.description,
-    required this.movieId,
-    this.showBookmark = true, // Default value is true
+    this.showBookmark = true,
+    this.onBookmarkToggle,
   });
-
-  @override
-  _CustomFavoriteCardState createState() => _CustomFavoriteCardState();
-}
-
-class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  bool isBookmarked = true;
-
-  Future<void> toggleBookmark() async {
-    final User? user = _auth.currentUser;
-    if (user == null) return;
-
-    final userId = user.uid;
-    final docRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('favorites')
-        .doc(widget.movieId.toString());
-
-    if (isBookmarked) {
-      await docRef.delete();
-    } else {
-      final movie = {
-        'id': widget.movieId,
-        'title': widget.title,
-        'genre': widget.genre,
-        'rating': widget.rating,
-        'description': widget.description,
-        'imageUrl': widget.imageUrl,
-      };
-      await docRef.set(movie);
-    }
-
-    setState(() {
-      isBookmarked = !isBookmarked;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +30,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailMovie(id: widget.movieId),
+            builder: (context) => DetailMovie(id: movieId),
           ),
         );
       },
@@ -94,7 +56,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(7),
                   child: Image.network(
-                    widget.imageUrl,
+                    imageUrl,
                     height: 170,
                     width: 100,
                     fit: BoxFit.cover,
@@ -113,7 +75,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                       children: [
                         Expanded(
                           child: Text(
-                            widget.title,
+                            title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -123,20 +85,20 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                             ),
                           ),
                         ),
-                        if (widget.showBookmark)
+                        if (showBookmark)
                           IconButton(
                             icon: Icon(
-                              isBookmarked
+                              onBookmarkToggle != null
                                   ? Icons.bookmark
                                   : Icons.bookmark_border,
-                              color: isBookmarked ? Colors.white : Colors.white,
+                              color: Colors.white,
                             ),
-                            onPressed: toggleBookmark,
+                            onPressed: onBookmarkToggle,
                           ),
                       ],
                     ),
                     Text(
-                      widget.genre,
+                      genre,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -150,7 +112,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                         const Icon(Icons.star, color: Colors.yellow, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          widget.rating,
+                          rating,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -161,7 +123,7 @@ class _CustomFavoriteCardState extends State<CustomFavoriteCard> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      widget.description,
+                      description,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(

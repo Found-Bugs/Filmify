@@ -84,10 +84,28 @@ class AuthService {
   Future<List<Map<String, dynamic>>> fetchPredictionHistory(String userId) async {
     try {
       final snapshot = await _firestore.collection('users').doc(userId).collection('history').orderBy('timestamp', descending: true).get();
-      return snapshot.docs.map((doc) => doc.data()).toList();
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id; // Add document ID to the data
+        return data;
+      }).toList();
     } catch (e) {
       print('Error fetching prediction history: $e');
       return [];
+    }
+  }
+
+  // Remove prediction from history
+  Future<void> removePredictionFromHistory(String userId, String predictionId) async {
+    try {
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('history')
+          .doc(predictionId)
+          .delete();
+    } catch (e) {
+      print('Error removing prediction from history: $e');
     }
   }
 }
