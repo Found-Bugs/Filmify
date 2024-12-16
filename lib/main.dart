@@ -1,5 +1,3 @@
-import 'package:filmify/screens/home.dart';
-import 'package:filmify/screens/profile.dart';
 import 'package:filmify/screens/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

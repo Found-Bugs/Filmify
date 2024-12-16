@@ -7,8 +7,6 @@ import 'package:filmify/widgets/custom_menu.dart';
 import 'package:filmify/widgets/custom_movie_card.dart';
 import 'package:filmify/widgets/custom_search.dart';
 import 'package:flutter/material.dart';
-// import 'package:filmify/data/data_movie_A.dart';
-import 'package:filmify/data/data_movie_B.dart';
 import 'package:filmify/tmdb_api/dependencies.dart';
 
 class Home extends StatefulWidget {

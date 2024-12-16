@@ -1,4 +1,3 @@
-import 'package:filmify/data/data_movie_A.dart';
 import 'package:filmify/screens/detail_movie.dart';
 import 'package:filmify/tmdb_api/api_service.dart';
 import 'package:filmify/utils/image.dart';

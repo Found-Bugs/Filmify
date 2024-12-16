@@ -188,7 +188,12 @@ class _CameraState extends State<Camera> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _uploadedImageUrl = null; // Reset to show camera preview again
+                });
+              },
               child: Text('Oke'),
             ),
           ],
@@ -219,8 +224,9 @@ class _CameraState extends State<Camera> {
           if (_uploadedImageUrl == null)
             Transform(
               alignment: Alignment.center,
-              transform:
-                  Matrix4.rotationY(math.pi), // Mirror the camera preview
+              transform: _cameras[_selectedCameraIndex].lensDirection == CameraLensDirection.front
+                  ? Matrix4.rotationY(math.pi) // Mirror the front camera preview
+                  : Matrix4.identity(), // Do not mirror the back camera preview
               child: CameraPreview(_cameraController),
             )
           else
